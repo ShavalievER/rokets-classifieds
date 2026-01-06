@@ -4,9 +4,15 @@
 
 Production build (папка `.next/`) уже загружен в GitHub и будет автоматически скачан при `git pull`.
 
+## ⚠️ ВАЖНО: Не используйте Git Version Control в cPanel!
+
+Если вы видите ошибку "No such file or directory" при использовании Git Version Control в cPanel, это означает, что cPanel настроен на неправильный путь. 
+
+**Используйте Terminal напрямую** (см. инструкции ниже).
+
 ## Шаг 1: Обновить код на сервере
 
-### Через Terminal в cPanel:
+### Через Terminal в cPanel (РЕКОМЕНДУЕТСЯ):
 
 ```bash
 cd ~/public_html/rokets-classifieds
