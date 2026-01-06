@@ -191,13 +191,49 @@ const server = http.createServer((req, res) => {
   }
   
   // If Next.js is ready, try to use it
-  if (nextApp && diagnostics.checks.find(c => c.name === 'Next.js prepare' && c.success)) {
+  const prepareCheck = diagnostics.checks.find(c => c.name === 'Next.js prepare');
+  if (nextApp && prepareCheck && prepareCheck.success) {
     try {
       const handle = nextApp.getRequestHandler();
-      handle(req, res);
+      
+      // Handle request with error catching
+      handle(req, res).catch((err) => {
+        console.error('Error in Next.js handler:', err);
+        console.error('Stack:', err.stack);
+        
+        // Track error in diagnostics
+        if (!diagnostics.requestErrors) {
+          diagnostics.requestErrors = [];
+        }
+        diagnostics.requestErrors.push({
+          url: req.url,
+          method: req.method,
+          error: err.message,
+          stack: err.stack,
+          timestamp: new Date().toISOString()
+        });
+        
+        // Show error page
+        if (!res.headersSent) {
+          res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+          res.end(`
+            <!DOCTYPE html>
+            <html>
+            <head><title>Next.js Error</title></head>
+            <body>
+              <h1>Next.js Request Error</h1>
+              <p><strong>Error:</strong> ${err.message}</p>
+              <pre>${err.stack}</pre>
+              <p><a href="/">Back to diagnostics</a></p>
+            </body>
+            </html>
+          `);
+        }
+      });
       return;
     } catch (e) {
-      console.error('Error using Next.js handler:', e.message);
+      console.error('Error setting up Next.js handler:', e.message);
+      console.error('Stack:', e.stack);
       // Fall through to show diagnostics
     }
   }
@@ -249,6 +285,19 @@ const server = http.createServer((req, res) => {
     <h2 class="error">Errors:</h2>
     <ul>
       ${diagnostics.errors.map(err => `<li class="error">${err}</li>`).join('')}
+    </ul>
+  ` : ''}
+  
+  ${diagnostics.requestErrors && diagnostics.requestErrors.length > 0 ? `
+    <h2 class="error">Request Errors:</h2>
+    <ul>
+      ${diagnostics.requestErrors.slice(-5).map(err => `
+        <li class="error">
+          <strong>${err.method} ${err.url}</strong> (${err.timestamp})<br>
+          <small>${err.error}</small>
+          ${err.stack ? `<pre style="font-size: 10px; margin-top: 5px;">${err.stack}</pre>` : ''}
+        </li>
+      `).join('')}
     </ul>
   ` : ''}
   
