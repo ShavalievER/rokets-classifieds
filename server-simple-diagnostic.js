@@ -117,22 +117,39 @@ if (nextModule) {
     console.log('✅ Next.js app created');
     
     // Try to prepare (async, non-blocking)
+    diagnostics.checks.push({
+      name: 'Next.js prepare',
+      status: 'starting',
+      started: new Date().toISOString()
+    });
+    
     nextApp.prepare()
       .then(() => {
         console.log('✅ Next.js app prepared successfully');
-        diagnostics.checks.push({
-          name: 'Next.js prepare',
-          success: true
-        });
+        const prepareCheck = diagnostics.checks.find(c => c.name === 'Next.js prepare');
+        if (prepareCheck) {
+          prepareCheck.status = 'success';
+          prepareCheck.success = true;
+          prepareCheck.completed = new Date().toISOString();
+        }
       })
       .catch((err) => {
         console.error('❌ Next.js prepare failed:', err.message);
+        console.error('Full error:', err);
+        console.error('Stack:', err.stack);
+        
+        const prepareCheck = diagnostics.checks.find(c => c.name === 'Next.js prepare');
+        if (prepareCheck) {
+          prepareCheck.status = 'failed';
+          prepareCheck.success = false;
+          prepareCheck.error = err.message;
+          prepareCheck.fullError = err.toString();
+          prepareCheck.stack = err.stack;
+          prepareCheck.completed = new Date().toISOString();
+        }
+        
         diagnostics.errors.push(`Next.js prepare failed: ${err.message}`);
-        diagnostics.checks.push({
-          name: 'Next.js prepare',
-          success: false,
-          error: err.message
-        });
+        diagnostics.errors.push(`Full error: ${err.toString()}`);
       });
   } catch (e) {
     diagnostics.errors.push(`Cannot create Next.js app: ${e.message}`);
@@ -186,14 +203,21 @@ const server = http.createServer((req, res) => {
   
   <h2>Checks:</h2>
   ${diagnostics.checks.map(check => `
-    <div class="check ${check.exists === false || check.loaded === false || check.created === false || check.success === false ? 'error' : ''}">
+    <div class="check ${check.exists === false || check.loaded === false || check.created === false || check.success === false || check.status === 'failed' ? 'error' : ''}">
       <strong>${check.name}:</strong> 
       ${check.exists !== undefined ? (check.exists ? '✅ EXISTS' : '❌ NOT FOUND') : ''}
       ${check.loaded !== undefined ? (check.loaded ? '✅ LOADED' : '❌ NOT LOADED') : ''}
       ${check.created !== undefined ? (check.created ? '✅ CREATED' : '❌ NOT CREATED') : ''}
+      ${check.status === 'starting' ? '⏳ STARTING...' : ''}
+      ${check.status === 'success' ? '✅ SUCCESS' : ''}
+      ${check.status === 'failed' ? '❌ FAILED' : ''}
       ${check.success !== undefined ? (check.success ? '✅ SUCCESS' : '❌ FAILED') : ''}
       ${check.path ? `<br><small>Path: <code>${check.path}</code></small>` : ''}
+      ${check.started ? `<br><small>Started: ${check.started}</small>` : ''}
+      ${check.completed ? `<br><small>Completed: ${check.completed}</small>` : ''}
       ${check.error ? `<br><small class="error">Error: ${check.error}</small>` : ''}
+      ${check.fullError ? `<br><pre class="error" style="font-size: 11px; margin-top: 5px;">${check.fullError}</pre>` : ''}
+      ${check.stack ? `<br><pre class="error" style="font-size: 10px; margin-top: 5px; max-height: 200px; overflow-y: auto;">${check.stack}</pre>` : ''}
     </div>
   `).join('')}
   
