@@ -13,38 +13,55 @@ console.log('Node.js version:', process.version);
 console.log('Port:', port);
 console.log('Base path:', basePath || '(none)');
 
-// System diagnostics
-const systemInfo = {
-  nodeVersion: process.version,
-  platform: process.platform,
-  arch: process.arch,
-  pid: process.pid,
-  uptime: process.uptime(),
-  memory: {
-    rss: Math.round(process.memoryUsage().rss / 1024 / 1024) + ' MB',
-    heapTotal: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + ' MB',
-    heapUsed: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + ' MB',
-    external: Math.round(process.memoryUsage().external / 1024 / 1024) + ' MB'
-  },
-  v8Heap: {
-    total: Math.round(v8.getHeapStatistics().total_heap_size / 1024 / 1024) + ' MB',
-    used: Math.round(v8.getHeapStatistics().used_heap_size / 1024 / 1024) + ' MB',
-    available: Math.round(v8.getHeapStatistics().total_available_size / 1024 / 1024) + ' MB',
-    limit: Math.round(v8.getHeapStatistics().heap_size_limit / 1024 / 1024) + ' MB'
-  },
-  os: {
-    totalmem: Math.round(os.totalmem() / 1024 / 1024) + ' MB',
-    freemem: Math.round(os.freemem() / 1024 / 1024) + ' MB',
-    cpus: os.cpus().length
-  },
-  env: {
-    NODE_ENV: process.env.NODE_ENV || 'not set',
-    PORT: port,
-    NEXT_PUBLIC_BASE_PATH: basePath || 'not set'
-  }
-};
-
-console.log('System Info:', JSON.stringify(systemInfo, null, 2));
+// System diagnostics (with error handling)
+let systemInfo = {};
+try {
+  systemInfo = {
+    nodeVersion: process.version,
+    platform: process.platform,
+    arch: process.arch,
+    pid: process.pid,
+    uptime: process.uptime(),
+    memory: {
+      rss: Math.round(process.memoryUsage().rss / 1024 / 1024) + ' MB',
+      heapTotal: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + ' MB',
+      heapUsed: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + ' MB',
+      external: Math.round(process.memoryUsage().external / 1024 / 1024) + ' MB'
+    },
+    v8Heap: (() => {
+      try {
+        return {
+          total: Math.round(v8.getHeapStatistics().total_heap_size / 1024 / 1024) + ' MB',
+          used: Math.round(v8.getHeapStatistics().used_heap_size / 1024 / 1024) + ' MB',
+          available: Math.round(v8.getHeapStatistics().total_available_size / 1024 / 1024) + ' MB',
+          limit: Math.round(v8.getHeapStatistics().heap_size_limit / 1024 / 1024) + ' MB'
+        };
+      } catch (e) {
+        return { error: 'v8.getHeapStatistics() failed: ' + e.message };
+      }
+    })(),
+    os: (() => {
+      try {
+        return {
+          totalmem: Math.round(os.totalmem() / 1024 / 1024) + ' MB',
+          freemem: Math.round(os.freemem() / 1024 / 1024) + ' MB',
+          cpus: os.cpus().length
+        };
+      } catch (e) {
+        return { error: 'os info failed: ' + e.message };
+      }
+    })(),
+    env: {
+      NODE_ENV: process.env.NODE_ENV || 'not set',
+      PORT: port,
+      NEXT_PUBLIC_BASE_PATH: basePath || 'not set'
+    }
+  };
+  console.log('System Info:', JSON.stringify(systemInfo, null, 2));
+} catch (e) {
+  console.error('Failed to initialize systemInfo:', e);
+  systemInfo = { error: 'Failed to initialize: ' + e.message };
+}
 
 // Configuration
 const USE_NEXTJS_HANDLER = true; // Enable with monitoring (with protection)
