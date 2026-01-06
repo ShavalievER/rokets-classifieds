@@ -77,11 +77,63 @@ const server = http.createServer((req, res) => {
 </html>
     `;
     
-    // DISABLED: Don't try to use Next.js handler - it causes crashes
-    // Always show diagnostics instead
-    // if (serverState.prepareSuccess && serverState.nextApp && serverState.handle) {
-    //   ... handler code ...
-    // }
+    // Try to use Next.js handler with maximum error protection
+    if (serverState.prepareSuccess && serverState.nextApp && serverState.handle) {
+      // Wrap in try-catch and promise catch to prevent any crashes
+      try {
+        // Use process.nextTick to ensure we're in async context
+        process.nextTick(() => {
+          try {
+            const handlePromise = serverState.handle(req, res);
+            
+            // Catch promise errors
+            if (handlePromise && typeof handlePromise.catch === 'function') {
+              handlePromise.catch((err) => {
+                console.error('Next.js handler promise error:', err);
+                serverState.errors.push(`Handler promise error: ${err.message}`);
+                serverState.errors.push(`Handler promise stack: ${err.stack}`);
+                
+                if (!res.headersSent) {
+                  res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+                  res.end(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Next.js Handler Error</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+    h1 { color: #f44336; }
+    .error { color: #f44336; }
+    pre { background: #2a2a2a; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 11px; }
+  </style>
+</head>
+<body>
+  <h1>❌ Next.js Handler Error</h1>
+  <p class="error"><strong>Error:</strong> ${err.message}</p>
+  <pre>${err.stack}</pre>
+  <p><a href="/" style="color: #4CAF50;">Back to diagnostics</a></p>
+</body>
+</html>
+                  `);
+                }
+              });
+            }
+          } catch (syncErr) {
+            console.error('Next.js handler sync error:', syncErr);
+            serverState.errors.push(`Handler sync error: ${syncErr.message}`);
+            if (!res.headersSent) {
+              res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+              res.end(`Handler sync error: ${syncErr.message}\n\n${syncErr.stack}`);
+            }
+          }
+        });
+        return; // Let Next.js try to handle
+      } catch (setupErr) {
+        console.error('Error setting up handler:', setupErr);
+        serverState.errors.push(`Handler setup error: ${setupErr.message}`);
+        // Fall through to show diagnostics
+      }
+    }
     
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
