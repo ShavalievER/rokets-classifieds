@@ -13,6 +13,10 @@ export default {
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },
+  // Reduce memory usage during build
+  swcMinify: false, // Disable SWC minification to reduce memory usage
+  // Disable source maps in production to save memory
+  productionBrowserSourceMaps: false,
   images: {
     formats: ['image/avif', 'image/webp'],
     dangerouslyAllowSVG: true,
