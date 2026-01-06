@@ -75,13 +75,51 @@ const server = http.createServer((req, res) => {
 </html>
     `;
     
-    // If Next.js is ready, try to use it
+    // If Next.js is ready, try to use it (but catch all errors)
     if (serverState.prepareSuccess && serverState.nextApp && serverState.handle) {
       try {
-        serverState.handle(req, res);
-        return;
+        // Handle request with error catching
+        const handlePromise = serverState.handle(req, res);
+        
+        // If handle returns a promise, catch errors
+        if (handlePromise && typeof handlePromise.catch === 'function') {
+          handlePromise.catch((err) => {
+            console.error('Error in Next.js handler:', err);
+            serverState.errors.push(`Handler error: ${err.message}`);
+            serverState.errors.push(`Handler stack: ${err.stack}`);
+            
+            // If headers not sent, show error page
+            if (!res.headersSent) {
+              const errorHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Next.js Handler Error</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+    h1 { color: #f44336; }
+    .error { color: #f44336; }
+    pre { background: #2a2a2a; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <h1>❌ Next.js Handler Error</h1>
+  <p class="error">Error: ${err.message}</p>
+  <pre>${err.stack}</pre>
+  <p><a href="/" style="color: #4CAF50;">Back to diagnostics</a></p>
+</body>
+</html>
+              `;
+              res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+              res.end(errorHtml);
+            }
+          });
+        }
+        return; // Let Next.js handle the request
       } catch (err) {
-        serverState.errors.push(`Handler error: ${err.message}`);
+        console.error('Error calling handler:', err);
+        serverState.errors.push(`Handler setup error: ${err.message}`);
+        serverState.errors.push(`Handler setup stack: ${err.stack}`);
         // Fall through to show diagnostics
       }
     }
