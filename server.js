@@ -34,6 +34,11 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   createServer((req, res) => {
+    // Log request for debugging
+    const url = req.url;
+    console.log(`[${new Date().toISOString()}] ${req.method} ${url}`);
+    
+    // Handle request
     handle(req, res);
   }).listen(port, (err) => {
     if (err) {
@@ -41,9 +46,14 @@ app.prepare().then(() => {
       process.exit(1);
     }
     console.log(`✅ Rokets classifieds ready on http://localhost:${port}${basePath}`);
+    console.log(`📝 Environment variables:`);
+    console.log(`   NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
+    console.log(`   NEXT_PUBLIC_BASE_PATH: "${process.env.NEXT_PUBLIC_BASE_PATH || ''}"`);
+    console.log(`   PORT: ${port}`);
   });
 }).catch((err) => {
   console.error('Failed to prepare Next.js app:', err);
+  console.error('Error details:', err.stack);
   process.exit(1);
 });
 
