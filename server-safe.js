@@ -83,30 +83,45 @@ let serverState = {
 
 // Memory monitoring
 function takeMemorySnapshot(label) {
-  const mem = process.memoryUsage();
-  const v8Heap = v8.getHeapStatistics();
-  const snapshot = {
-    label,
-    timestamp: new Date().toISOString(),
-    memory: {
-      rss: Math.round(mem.rss / 1024 / 1024) + ' MB',
-      heapTotal: Math.round(mem.heapTotal / 1024 / 1024) + ' MB',
-      heapUsed: Math.round(mem.heapUsed / 1024 / 1024) + ' MB',
-      external: Math.round(mem.external / 1024 / 1024) + ' MB'
-    },
-    v8Heap: {
-      total: Math.round(v8Heap.total_heap_size / 1024 / 1024) + ' MB',
-      used: Math.round(v8Heap.used_heap_size / 1024 / 1024) + ' MB',
-      limit: Math.round(v8Heap.heap_size_limit / 1024 / 1024) + ' MB'
+  try {
+    const mem = process.memoryUsage();
+    let v8Heap = null;
+    try {
+      v8Heap = v8.getHeapStatistics();
+    } catch (e) {
+      console.error(`Failed to get v8 heap stats for ${label}:`, e);
     }
-  };
-  serverState.memorySnapshots.push(snapshot);
-  // Keep only last 20 snapshots
-  if (serverState.memorySnapshots.length > 20) {
-    serverState.memorySnapshots = serverState.memorySnapshots.slice(-20);
+    
+    const snapshot = {
+      label,
+      timestamp: new Date().toISOString(),
+      memory: {
+        rss: Math.round(mem.rss / 1024 / 1024) + ' MB',
+        heapTotal: Math.round(mem.heapTotal / 1024 / 1024) + ' MB',
+        heapUsed: Math.round(mem.heapUsed / 1024 / 1024) + ' MB',
+        external: Math.round(mem.external / 1024 / 1024) + ' MB'
+      },
+      v8Heap: v8Heap ? {
+        total: Math.round(v8Heap.total_heap_size / 1024 / 1024) + ' MB',
+        used: Math.round(v8Heap.used_heap_size / 1024 / 1024) + ' MB',
+        limit: Math.round(v8Heap.heap_size_limit / 1024 / 1024) + ' MB'
+      } : { error: 'v8.getHeapStatistics() failed' }
+    };
+    
+    if (serverState && serverState.memorySnapshots) {
+      serverState.memorySnapshots.push(snapshot);
+      // Keep only last 20 snapshots
+      if (serverState.memorySnapshots.length > 20) {
+        serverState.memorySnapshots = serverState.memorySnapshots.slice(-20);
+      }
+    }
+    
+    console.log(`Memory snapshot [${label}]:`, JSON.stringify(snapshot, null, 2));
+    return snapshot;
+  } catch (e) {
+    console.error(`Failed to take memory snapshot [${label}]:`, e);
+    return { label, timestamp: new Date().toISOString(), error: e.message };
   }
-  console.log(`Memory snapshot [${label}]:`, JSON.stringify(snapshot, null, 2));
-  return snapshot;
 }
 
 // Take initial snapshot
