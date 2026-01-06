@@ -69,8 +69,14 @@ const server = http.createServer((req, res) => {
   ${serverState.prepareSuccess && serverState.nextApp ? `
     <div class="section">
       <p class="success">✅ Next.js is ready!</p>
-      <p><strong>Note:</strong> Next.js handler is disabled to prevent crashes. This is a diagnostic mode.</p>
-      <p>To enable Next.js, you need to fix the handler errors first.</p>
+      <p><strong>Handler Status:</strong> ${USE_NEXTJS_HANDLER ? 'Enabled (may cause crashes)' : 'Disabled (diagnostic mode)'}</p>
+      <p><strong>Next Steps:</strong></p>
+      <ol>
+        <li>Check errors above (if any)</li>
+        <li>If no errors, the issue is likely in Next.js handler itself</li>
+        <li>Try enabling handler by setting USE_NEXTJS_HANDLER = true in server-safe.js</li>
+        <li>Or try using server.js which has improved error handling</li>
+      </ol>
     </div>
   ` : ''}
 </body>
@@ -78,24 +84,25 @@ const server = http.createServer((req, res) => {
     `;
     
     // Try to use Next.js handler with maximum error protection
-    if (serverState.prepareSuccess && serverState.nextApp && serverState.handle) {
-      // Wrap in try-catch and promise catch to prevent any crashes
+    // DISABLED for now - causes process crashes
+    // We'll enable it step by step to find the issue
+    const USE_NEXTJS_HANDLER = false; // Set to true to enable
+    
+    if (USE_NEXTJS_HANDLER && serverState.prepareSuccess && serverState.nextApp && serverState.handle) {
       try {
-        // Use process.nextTick to ensure we're in async context
-        process.nextTick(() => {
-          try {
-            const handlePromise = serverState.handle(req, res);
+        console.log('Attempting to use Next.js handler...');
+        const handlePromise = serverState.handle(req, res);
+        
+        // Catch promise errors
+        if (handlePromise && typeof handlePromise.catch === 'function') {
+          handlePromise.catch((err) => {
+            console.error('Next.js handler promise error:', err);
+            serverState.errors.push(`Handler promise error: ${err.message}`);
+            serverState.errors.push(`Handler promise stack: ${err.stack}`);
             
-            // Catch promise errors
-            if (handlePromise && typeof handlePromise.catch === 'function') {
-              handlePromise.catch((err) => {
-                console.error('Next.js handler promise error:', err);
-                serverState.errors.push(`Handler promise error: ${err.message}`);
-                serverState.errors.push(`Handler promise stack: ${err.stack}`);
-                
-                if (!res.headersSent) {
-                  res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
-                  res.end(`
+            if (!res.headersSent) {
+              res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+              res.end(`
 <!DOCTYPE html>
 <html>
 <head>
@@ -114,23 +121,15 @@ const server = http.createServer((req, res) => {
   <p><a href="/" style="color: #4CAF50;">Back to diagnostics</a></p>
 </body>
 </html>
-                  `);
-                }
-              });
+              `);
             }
-          } catch (syncErr) {
-            console.error('Next.js handler sync error:', syncErr);
-            serverState.errors.push(`Handler sync error: ${syncErr.message}`);
-            if (!res.headersSent) {
-              res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
-              res.end(`Handler sync error: ${syncErr.message}\n\n${syncErr.stack}`);
-            }
-          }
-        });
+          });
+        }
         return; // Let Next.js try to handle
-      } catch (setupErr) {
-        console.error('Error setting up handler:', setupErr);
-        serverState.errors.push(`Handler setup error: ${setupErr.message}`);
+      } catch (err) {
+        console.error('Error calling handler:', err);
+        serverState.errors.push(`Handler error: ${err.message}`);
+        serverState.errors.push(`Handler stack: ${err.stack}`);
         // Fall through to show diagnostics
       }
     }
