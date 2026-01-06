@@ -5,6 +5,7 @@
     "npm": ">=9.0.0"
   },
   "scripts": {
+    "preinstall": "npm config set legacy-peer-deps true || true",
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
@@ -19,7 +20,7 @@
     "@heroicons/react": "^2.2.0",
     "clsx": "^2.1.1",
     "geist": "^1.5.1",
-    "next": "15.6.0-canary.60",
+    "next": "^15.1.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "sonner": "^2.0.1"
