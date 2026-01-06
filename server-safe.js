@@ -277,7 +277,11 @@ const server = http.createServer((req, res) => {
 });
 
 // Start server FIRST
-server.listen(port, '0.0.0.0', () => {
+server.listen(port, '0.0.0.0', (err) => {
+  if (err) {
+    console.error('❌ Failed to start server:', err);
+    process.exit(1);
+  }
   console.log('='.repeat(50));
   console.log('✅ SAFE SERVER RUNNING');
   console.log(`   Port: ${port}`);
@@ -355,12 +359,22 @@ server.on('error', (err) => {
 
 process.on('uncaughtException', (err) => {
   console.error('❌ UNCAUGHT EXCEPTION:', err);
-  serverState.errors.push(`Uncaught exception: ${err.message}`);
-  // Don't exit - keep server running
+  console.error('Stack:', err.stack);
+  if (serverState) {
+    serverState.errors.push(`Uncaught exception: ${err.message}`);
+    serverState.errors.push(`Stack: ${err.stack}`);
+  }
+  // Don't exit immediately - try to log error
+  setTimeout(() => {
+    process.exit(1);
+  }, 1000);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
   console.error('❌ UNHANDLED REJECTION:', reason);
-  serverState.errors.push(`Unhandled rejection: ${String(reason)}`);
+  console.error('Promise:', promise);
+  if (serverState) {
+    serverState.errors.push(`Unhandled rejection: ${String(reason)}`);
+  }
 });
 
