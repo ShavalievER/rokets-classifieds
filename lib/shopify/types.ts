@@ -68,9 +68,18 @@ export type Page = {
   updatedAt: string;
 };
 
+export type Metafield = {
+  id: string;
+  namespace: string;
+  key: string;
+  value: string;
+  type: string;
+};
+
 export type Product = Omit<ShopifyProduct, 'variants' | 'images'> & {
   variants: ProductVariant[];
   images: Image[];
+  metafields?: Metafield[];
 };
 
 export type ProductOption = {

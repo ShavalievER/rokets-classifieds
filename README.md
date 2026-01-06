@@ -1,75 +1,151 @@
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fcommerce&project-name=commerce&repo-name=commerce&demo-title=Next.js%20Commerce&demo-url=https%3A%2F%2Fdemo.vercel.store&demo-image=https%3A%2F%2Fbigcommerce-demo-asset-ksvtgfvnd.vercel.app%2Fbigcommerce.png&env=COMPANY_NAME,SHOPIFY_REVALIDATION_SECRET,SHOPIFY_STORE_DOMAIN,SHOPIFY_STOREFRONT_ACCESS_TOKEN,SITE_NAME)
+# Rokets Classifieds Platform
 
-# Next.js Commerce
+A high-performance classifieds marketplace built with Next.js 15, React 19, and TypeScript. This platform enables users to buy and sell items with integrated delivery tracking through Rokets Delivery.
 
-A high-performance, server-rendered Next.js App Router ecommerce application.
+## 🌟 Features
 
-This template uses React Server Components, Server Actions, `Suspense`, `useOptimistic`, and more.
+- **Two-Level Category Structure**: Organized product categories with subcategories
+- **Seller Information**: Detailed seller profiles with ratings, location, and contact details
+- **Rokets Delivery Integration**: Real-time delivery tracking with live map visualization
+- **Order Management**: Complete order history with status tracking
+- **User Accounts**: Profile settings, delivery addresses, and payment methods
+- **Advanced Filtering**: Search by category, price, keywords, and seller location
+- **Pagination**: Efficient browsing with 24 items per page
+- **Demo Mode**: Works out of the box with mock data (no external APIs required)
 
-<h3 id="v1-note"></h3>
+## 🚀 Live Demo
 
-> Note: Looking for Next.js Commerce v1? View the [code](https://github.com/vercel/commerce/tree/v1), [demo](https://commerce-v1.vercel.store), and [release notes](https://github.com/vercel/commerce/releases/tag/v1).
+Visit the live demo at: [https://rokets.delivery/demo](https://rokets.delivery/demo)
 
-## Providers
+## 🛠️ Tech Stack
 
-Vercel will only be actively maintaining a Shopify version [as outlined in our vision and strategy for Next.js Commerce](https://github.com/vercel/commerce/pull/966).
+- **Framework**: Next.js 15.6 (App Router)
+- **React**: 19.0
+- **TypeScript**: 5.8
+- **Styling**: Tailwind CSS 4.0
+- **Package Manager**: pnpm
+- **Maps**: Leaflet (OpenStreetMap)
 
-Vercel is happy to partner and work with any commerce provider to help them get a similar template up and running and listed below. Alternative providers should be able to fork this repository and swap out the `lib/shopify` file with their own implementation while leaving the rest of the template mostly unchanged.
+## 📦 Getting Started
 
-- Shopify (this repository)
-- [BigCommerce](https://github.com/bigcommerce/nextjs-commerce) ([Demo](https://next-commerce-v2.vercel.app/))
-- [Ecwid by Lightspeed](https://github.com/Ecwid/ecwid-nextjs-commerce/) ([Demo](https://ecwid-nextjs-commerce.vercel.app/))
-- [Geins](https://github.com/geins-io/vercel-nextjs-commerce) ([Demo](https://geins-nextjs-commerce-starter.vercel.app/))
-- [Medusa](https://github.com/medusajs/vercel-commerce) ([Demo](https://medusa-nextjs-commerce.vercel.app/))
-- [Prodigy Commerce](https://github.com/prodigycommerce/nextjs-commerce) ([Demo](https://prodigy-nextjs-commerce.vercel.app/))
-- [Saleor](https://github.com/saleor/nextjs-commerce) ([Demo](https://saleor-commerce.vercel.app/))
-- [Shopware](https://github.com/shopwareLabs/vercel-commerce) ([Demo](https://shopware-vercel-commerce-react.vercel.app/))
-- [Swell](https://github.com/swellstores/verswell-commerce) ([Demo](https://verswell-commerce.vercel.app/))
-- [Umbraco](https://github.com/umbraco/Umbraco.VercelCommerce.Demo) ([Demo](https://vercel-commerce-demo.umbraco.com/))
-- [Wix](https://github.com/wix/headless-templates/tree/main/nextjs/commerce) ([Demo](https://wix-nextjs-commerce.vercel.app/))
-- [Fourthwall](https://github.com/FourthwallHQ/vercel-commerce) ([Demo](https://vercel-storefront.fourthwall.app/))
+### Prerequisites
 
-> Note: Providers, if you are looking to use similar products for your demo, you can [download these assets](https://drive.google.com/file/d/1q_bKerjrwZgHwCw0ovfUMW6He9VtepO_/view?usp=sharing).
+- Node.js 18+ 
+- pnpm (recommended) or npm
 
-## Integrations
+### Installation
 
-Integrations enable upgraded or additional functionality for Next.js Commerce
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd commerce
+```
 
-- [Orama](https://github.com/oramasearch/nextjs-commerce) ([Demo](https://vercel-commerce.oramasearch.com/))
-
-  - Upgrades search to include typeahead with dynamic re-rendering, vector-based similarity search, and JS-based configuration.
-  - Search runs entirely in the browser for smaller catalogs or on a CDN for larger.
-
-- [React Bricks](https://github.com/ReactBricks/nextjs-commerce-rb) ([Demo](https://nextjs-commerce.reactbricks.com/))
-  - Edit pages, product details, and footer content visually using [React Bricks](https://www.reactbricks.com) visual headless CMS.
-
-## Running locally
-
-You will need to use the environment variables [defined in `.env.example`](.env.example) to run Next.js Commerce. It's recommended you use [Vercel Environment Variables](https://vercel.com/docs/concepts/projects/environment-variables) for this, but a `.env` file is all that is necessary.
-
-> Note: You should not commit your `.env` file or it will expose secrets that will allow others to control your Shopify store.
-
-1. Install Vercel CLI: `npm i -g vercel`
-2. Link local instance with Vercel and GitHub accounts (creates `.vercel` directory): `vercel link`
-3. Download your environment variables: `vercel env pull`
-
+2. Install dependencies:
 ```bash
 pnpm install
+```
+
+3. Run the development server:
+```bash
 pnpm dev
 ```
 
-Your app should now be running on [localhost:3000](http://localhost:3000/).
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-<details>
-  <summary>Expand if you work at Vercel and want to run locally and / or contribute</summary>
+The app runs in **demo mode** by default with mock product data, sellers, and orders.
 
-1. Run `vc link`.
-1. Select the `Vercel Solutions` scope.
-1. Connect to the existing `commerce-shopify` project.
-1. Run `vc env pull` to get environment variables.
-1. Run `pnpm dev` to ensure everything is working correctly.
-</details>
+## 🏗️ Project Structure
 
-## Vercel, Next.js Commerce, and Shopify Integration Guide
+```
+commerce/
+├── app/                    # Next.js App Router pages
+│   ├── account/           # User account pages
+│   ├── orders/            # Order tracking pages
+│   ├── product/           # Product detail pages
+│   ├── search/            # Category and search pages
+│   └── checkout/          # Checkout confirmation
+├── components/            # React components
+│   ├── orders/           # Order tracking components
+│   ├── rockets/          # Delivery widget
+│   ├── p2p/              # Seller and messaging components
+│   └── layout/           # Layout components
+├── lib/
+│   ├── demo/             # Mock data (products, sellers, orders)
+│   └── shopify/          # Shopify integration (optional)
+└── public/               # Static assets
+```
 
-You can use this comprehensive [integration guide](https://vercel.com/docs/integrations/ecommerce/shopify) with step-by-step instructions on how to configure Shopify as a headless CMS using Next.js Commerce as your headless Shopify storefront on Vercel.
+## 🔧 Configuration
+
+### Environment Variables
+
+The project works in demo mode without any environment variables. For production with Shopify integration, see [SHOPIFY_SETUP.md](./SHOPIFY_SETUP.md).
+
+Optional variables:
+- `SITE_NAME`: Site name (default: "Rokets")
+- `COMPANY_NAME`: Company name for footer
+
+## 📱 Features Overview
+
+### Categories & Products
+- 8 main categories with multiple subcategories
+- 10 products per subcategory (auto-generated)
+- Product cards with images, prices, and delivery costs
+- Detailed product pages with seller information
+
+### Delivery Tracking
+- Real-time courier location on map
+- Route visualization with waypoints
+- Estimated delivery times
+- Order status timeline
+
+### User Features
+- Account management
+- Delivery address management
+- Payment method management
+- Order history
+- Active order tracking
+
+## 🚢 Deployment
+
+### Deploy to Vercel
+
+1. Push your code to GitHub
+2. Import the project in [Vercel](https://vercel.com)
+3. Configure the project:
+   - **Framework Preset**: Next.js
+   - **Root Directory**: `commerce` (if repo root is parent)
+   - **Build Command**: `pnpm build`
+   - **Output Directory**: `.next`
+4. Add environment variables if needed
+5. Deploy!
+
+### Deploy to Custom Domain
+
+To deploy to `https://rokets.delivery/demo`:
+
+1. In Vercel project settings, go to **Domains**
+2. Add `rokets.delivery` as a domain
+3. Configure path prefix `/demo` in Vercel settings or use rewrites in `next.config.ts`
+
+## 📝 Scripts
+
+- `pnpm dev` - Start development server
+- `pnpm build` - Build for production
+- `pnpm start` - Start production server
+- `pnpm export-listings` - Export all listings to CSV
+
+## 🤝 Contributing
+
+This is a demo project. For contributions, please fork the repository and submit pull requests.
+
+## 📄 License
+
+See [LICENSE](./license.md) for details.
+
+## 🙏 Acknowledgments
+
+- Built on [Next.js Commerce](https://github.com/vercel/commerce) template
+- Uses [Leaflet](https://leafletjs.com/) for maps
+- Icons from [Heroicons](https://heroicons.com/)

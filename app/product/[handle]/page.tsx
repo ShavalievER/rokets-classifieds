@@ -1,5 +1,12 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
+import { Suspense } from 'react';
+
+import DeliveryWidget from 'components/rockets/DeliveryWidget';
+import SellerCard from 'components/p2p/seller-card';
+import MessageWidget from 'components/p2p/message-widget';
+import { getSellerIdForHandle } from 'lib/demo/listing-sellers';
 
 import { GridTileImage } from 'components/grid/tile';
 import Footer from 'components/layout/footer';
@@ -8,9 +15,7 @@ import { ProductProvider } from 'components/product/product-context';
 import { ProductDescription } from 'components/product/product-description';
 import { HIDDEN_PRODUCT_TAG } from 'lib/constants';
 import { getProduct, getProductRecommendations } from 'lib/shopify';
-import { Image } from 'lib/shopify/types';
-import Link from 'next/link';
-import { Suspense } from 'react';
+import type { Image } from 'lib/shopify/types';
 
 export async function generateMetadata(props: {
   params: Promise<{ handle: string }>;
@@ -55,12 +60,15 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
 
   if (!product) return notFound();
 
+  // P2P seller mapping for demo
+  const sellerId = getSellerIdForHandle(params.handle);
+
   const productJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: product.title,
     description: product.description,
-    image: product.featuredImage.url,
+    image: product.featuredImage?.url,
     offers: {
       '@type': 'AggregateOffer',
       availability: product.availableForSale
@@ -82,30 +90,65 @@ export default async function ProductPage(props: { params: Promise<{ handle: str
       />
       <div className="mx-auto max-w-(--breakpoint-2xl) px-4">
         <div className="flex flex-col rounded-lg border border-neutral-200 bg-white p-8 md:p-12 lg:flex-row lg:gap-8 dark:border-neutral-800 dark:bg-black">
-          <div className="h-full w-full basis-full lg:basis-4/6">
-            <Suspense
-              fallback={
-                <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden" />
-              }
-            >
-              <Gallery
-                images={product.images.slice(0, 5).map((image: Image) => ({
-                  src: image.url,
-                  altText: image.altText
-                }))}
-              />
-            </Suspense>
+          {/* Left Column - Images and Product Info */}
+          <div className="flex-1">
+            {/* Gallery - Images */}
+            <div className="mb-8">
+              <Suspense
+                fallback={
+                  <div className="relative aspect-square w-full max-h-[550px] overflow-hidden" />
+                }
+              >
+                <Gallery
+                  images={product.images.slice(0, 5).map((image: Image) => ({
+                    src: image.url,
+                    altText: image.altText
+                  }))}
+                />
+              </Suspense>
+            </div>
+
+            {/* Product Description - Title, Price, Description */}
+            <div>
+              <Suspense fallback={null}>
+                <ProductDescription product={product} />
+              </Suspense>
+            </div>
           </div>
 
-          <div className="basis-full lg:basis-2/6">
-            <Suspense fallback={null}>
-              <ProductDescription product={product} />
-            </Suspense>
+          {/* Right Column - Seller Information and Delivery */}
+          <div className="mt-8 lg:mt-0 lg:w-96 lg:flex-shrink-0">
+            {/* P2P seller block - Seller Information */}
+            <div>
+              <h3 className="mb-3 text-lg font-bold text-neutral-900 dark:text-white">Seller Information</h3>
+              <SellerCard sellerId={sellerId} />
+            </div>
+
+            {/* Rockets delivery demo with Add to Cart */}
+            <div className="mt-6">
+              <DeliveryWidget
+                listingId={product.handle}
+                product={product}
+                sellerId={sellerId}
+                declaredValueAed={Number(product.priceRange?.maxVariantPrice?.amount ?? 300)}
+                weightKg={3}
+                fragile={false}
+              />
+            </div>
           </div>
         </div>
+
         <RelatedProducts id={product.id} />
       </div>
+
       <Footer />
+
+      {/* Floating Message Widget */}
+      <MessageWidget
+        sellerId={sellerId}
+        productTitle={product.title}
+        productHandle={product.handle}
+      />
     </ProductProvider>
   );
 }
@@ -124,11 +167,7 @@ async function RelatedProducts({ id }: { id: string }) {
             key={product.handle}
             className="aspect-square w-full flex-none min-[475px]:w-1/2 sm:w-1/3 md:w-1/4 lg:w-1/5"
           >
-            <Link
-              className="relative h-full w-full"
-              href={`/product/${product.handle}`}
-              prefetch={true}
-            >
+            <Link className="relative h-full w-full" href={`/product/${product.handle}`} prefetch={true}>
               <GridTileImage
                 alt={product.title}
                 label={{

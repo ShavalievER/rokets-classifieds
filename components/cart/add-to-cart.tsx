@@ -70,16 +70,16 @@ export function AddToCart({ product }: { product: Product }) {
   );
   const defaultVariantId = variants.length === 1 ? variants[0]?.id : undefined;
   const selectedVariantId = variant?.id || defaultVariantId;
-  const addItemAction = formAction.bind(null, selectedVariantId);
   const finalVariant = variants.find(
     (variant) => variant.id === selectedVariantId
   )!;
 
   return (
     <form
-      action={async () => {
+      action={async (formData: FormData) => {
+        formData.set('variantId', selectedVariantId!);
         addCartItem(finalVariant, product);
-        addItemAction();
+        formAction(formData);
       }}
     >
       <SubmitButton

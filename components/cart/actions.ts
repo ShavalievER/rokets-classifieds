@@ -8,22 +8,45 @@ import {
   removeFromCart,
   updateCart
 } from 'lib/shopify';
-import { revalidateTag } from 'next/cache';
+import { revalidateTag, revalidatePath } from 'next/cache';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 
 export async function addItem(
   prevState: any,
-  selectedVariantId: string | undefined
+  formData: FormData | string | undefined
 ) {
+  // Handle both old API (string) and new API (FormData)
+  let selectedVariantId: string | undefined;
+  let deliveryPrice: number | undefined;
+  
+  if (formData instanceof FormData) {
+    selectedVariantId = formData.get('variantId') as string | undefined;
+    const deliveryPriceStr = formData.get('deliveryPrice') as string | undefined;
+    deliveryPrice = deliveryPriceStr ? Number(deliveryPriceStr) : undefined;
+  } else {
+    // Backward compatibility with old API
+    selectedVariantId = formData as string | undefined;
+  }
+  
   if (!selectedVariantId) {
     return 'Error adding item to cart';
   }
 
   try {
-    await addToCart([{ merchandiseId: selectedVariantId, quantity: 1 }]);
+    let cart = await getCart();
+    
+    // If cart doesn't exist, create one
+    if (!cart) {
+      cart = await createCart();
+      (await cookies()).set('cartId', cart.id!);
+    }
+    
+    await addToCart([{ merchandiseId: selectedVariantId, quantity: 1 }], deliveryPrice);
     revalidateTag(TAGS.cart, 'seconds');
+    revalidatePath('/', 'layout'); // Revalidate the root layout to update cart
   } catch (e) {
+    console.error('Error adding item to cart:', e);
     return 'Error adding item to cart';
   }
 }
@@ -96,8 +119,15 @@ export async function updateItemQuantity(
 }
 
 export async function redirectToCheckout() {
-  let cart = await getCart();
-  redirect(cart!.checkoutUrl);
+  const cart = await getCart();
+  
+  if (!cart || !cart.checkoutUrl) {
+    // If no cart, redirect to home
+    redirect('/');
+    return;
+  }
+  
+  redirect(cart.checkoutUrl);
 }
 
 export async function createCartAndSetCookie() {

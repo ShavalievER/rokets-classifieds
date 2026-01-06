@@ -218,6 +218,14 @@ const reshapeProducts = (products: ShopifyProduct[]) => {
 };
 
 export async function createCart(): Promise<Cart> {
+  if (!endpoint) {
+    // Используем демо-реализацию корзины
+    const { createDemoCart } = await import('lib/demo/cart');
+    const cart = await createDemoCart();
+    // Cookie уже установлен в createDemoCart
+    return cart;
+  }
+
   const res = await shopifyFetch<ShopifyCreateCartOperation>({
     query: createCartMutation
   });
@@ -226,8 +234,23 @@ export async function createCart(): Promise<Cart> {
 }
 
 export async function addToCart(
-  lines: { merchandiseId: string; quantity: number }[]
+  lines: { merchandiseId: string; quantity: number }[],
+  deliveryPrice?: number
 ): Promise<Cart> {
+  if (!endpoint) {
+    // Используем демо-реализацию корзины
+    const { addToDemoCart, createDemoCart } = await import('lib/demo/cart');
+    const cookieStore = await cookies();
+    let cartId = cookieStore.get('cartId')?.value;
+    
+    if (!cartId) {
+      const newCart = await createDemoCart();
+      cartId = newCart.id!;
+    }
+    
+    return addToDemoCart(cartId, lines, deliveryPrice);
+  }
+
   const cartId = (await cookies()).get('cartId')?.value!;
   const res = await shopifyFetch<ShopifyAddToCartOperation>({
     query: addToCartMutation,
@@ -240,6 +263,13 @@ export async function addToCart(
 }
 
 export async function removeFromCart(lineIds: string[]): Promise<Cart> {
+  if (!endpoint) {
+    // Используем демо-реализацию корзины
+    const { removeFromDemoCart } = await import('lib/demo/cart');
+    const cartId = (await cookies()).get('cartId')?.value!;
+    return removeFromDemoCart(cartId, lineIds);
+  }
+
   const cartId = (await cookies()).get('cartId')?.value!;
   const res = await shopifyFetch<ShopifyRemoveFromCartOperation>({
     query: removeFromCartMutation,
@@ -255,6 +285,13 @@ export async function removeFromCart(lineIds: string[]): Promise<Cart> {
 export async function updateCart(
   lines: { id: string; merchandiseId: string; quantity: number }[]
 ): Promise<Cart> {
+  if (!endpoint) {
+    // Используем демо-реализацию корзины
+    const { updateDemoCart } = await import('lib/demo/cart');
+    const cartId = (await cookies()).get('cartId')?.value!;
+    return updateDemoCart(cartId, lines);
+  }
+
   const cartId = (await cookies()).get('cartId')?.value!;
   const res = await shopifyFetch<ShopifyUpdateCartOperation>({
     query: editCartItemsMutation,
@@ -272,6 +309,12 @@ export async function getCart(): Promise<Cart | undefined> {
 
   if (!cartId) {
     return undefined;
+  }
+
+  if (!endpoint) {
+    // Используем демо-реализацию корзины
+    const { getDemoCart } = await import('lib/demo/cart');
+    return getDemoCart(cartId);
   }
 
   const res = await shopifyFetch<ShopifyCartOperation>({
@@ -294,6 +337,62 @@ export async function getCollection(
   cacheTag(TAGS.collections);
   cacheLife('days');
 
+  if (!endpoint) {
+    // Используем демо-категории вместо Shopify
+    const { getCategoryByHandle, CATEGORY_STRUCTURE } = await import('lib/demo/categories');
+    
+    // If handle is empty, return "All Categories"
+    if (!handle) {
+      return {
+        handle: '',
+        title: 'All Categories',
+        description: 'All products',
+        seo: {
+          title: 'All Categories',
+          description: 'All products'
+        },
+        path: '/search',
+        updatedAt: new Date().toISOString()
+      };
+    }
+    
+    // First try to find main category
+    const category = getCategoryByHandle(handle);
+    if (category) {
+      return {
+        handle: category.handle,
+        title: category.name,
+        description: `${category.name} category`,
+        seo: {
+          title: category.name,
+          description: `${category.name} category`
+        },
+        path: `/search/${category.handle}`,
+        updatedAt: new Date().toISOString()
+      };
+    }
+    
+    // If not found, search in all subcategories
+    for (const cat of CATEGORY_STRUCTURE) {
+      const subcategory = cat.subcategories?.find(sub => sub.handle === handle);
+      if (subcategory) {
+        return {
+          handle: subcategory.handle,
+          title: subcategory.name,
+          description: `${subcategory.name} in ${cat.name}`,
+          seo: {
+            title: subcategory.name,
+            description: `${subcategory.name} in ${cat.name}`
+          },
+          path: `/search/${cat.handle}/${subcategory.handle}`,
+          updatedAt: new Date().toISOString()
+        };
+      }
+    }
+    
+    return undefined;
+  }
+
   const res = await shopifyFetch<ShopifyCollectionOperation>({
     query: getCollectionQuery,
     variables: {
@@ -307,19 +406,28 @@ export async function getCollection(
 export async function getCollectionProducts({
   collection,
   reverse,
-  sortKey
+  sortKey,
+  filters
 }: {
   collection: string;
   reverse?: boolean;
   sortKey?: string;
+  filters?: {
+    subcategory?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    keywords?: string;
+    location?: string;
+  };
 }): Promise<Product[]> {
   'use cache';
   cacheTag(TAGS.collections, TAGS.products);
   cacheLife('days');
 
   if (!endpoint) {
-    console.log(`Skipping getCollectionProducts for '${collection}' - Shopify not configured`);
-    return [];
+    // Используем демо-данные вместо Shopify
+    const { getDemoCollectionProducts } = await import('lib/demo/products');
+    return getDemoCollectionProducts(collection, filters);
   }
 
   const res = await shopifyFetch<ShopifyCollectionProductsOperation>({
@@ -347,19 +455,21 @@ export async function getCollections(): Promise<Collection[]> {
   cacheLife('days');
 
   if (!endpoint) {
-    console.log('Skipping getCollections - Shopify not configured');
+    // Используем демо-категории вместо Shopify
+    const { DEMO_COLLECTIONS } = await import('lib/demo/categories');
     return [
       {
         handle: '',
-        title: 'All',
+        title: 'All Categories',
         description: 'All products',
         seo: {
-          title: 'All',
+          title: 'All Categories',
           description: 'All products'
         },
         path: '/search',
         updatedAt: new Date().toISOString()
-      }
+      },
+      ...DEMO_COLLECTIONS
     ];
   }
 
@@ -395,8 +505,9 @@ export async function getMenu(handle: string): Promise<Menu[]> {
   cacheLife('days');
 
   if (!endpoint) {
-    console.log(`Skipping getMenu for '${handle}' - Shopify not configured`);
-    return [];
+    // Используем демо-меню вместо Shopify
+    const { getDemoMenu } = await import('lib/demo/menu');
+    return getDemoMenu(handle);
   }
 
   const res = await shopifyFetch<ShopifyMenuOperation>({
@@ -440,8 +551,9 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
   cacheLife('days');
 
   if (!endpoint) {
-    console.log(`Skipping getProduct for '${handle}' - Shopify not configured`);
-    return undefined;
+    // Используем демо-данные вместо Shopify
+    const { getDemoProduct } = await import('lib/demo/products');
+    return getDemoProduct(handle);
   }
 
   const res = await shopifyFetch<ShopifyProductOperation>({
@@ -460,6 +572,12 @@ export async function getProductRecommendations(
   'use cache';
   cacheTag(TAGS.products);
   cacheLife('days');
+
+  if (!endpoint) {
+    // Используем демо-данные вместо Shopify
+    const { getDemoProductRecommendations } = await import('lib/demo/products');
+    return getDemoProductRecommendations(productId);
+  }
 
   const res = await shopifyFetch<ShopifyProductRecommendationsOperation>({
     query: getProductRecommendationsQuery,
@@ -483,6 +601,23 @@ export async function getProducts({
   'use cache';
   cacheTag(TAGS.products);
   cacheLife('days');
+
+  if (!endpoint) {
+    // Используем демо-данные вместо Shopify
+    const { getDemoProducts } = await import('lib/demo/products');
+    let products = getDemoProducts();
+    
+    // Простая фильтрация по query (если есть)
+    if (query) {
+      const searchQuery = query.toLowerCase();
+      products = products.filter(
+        p => p.title.toLowerCase().includes(searchQuery) ||
+             p.description.toLowerCase().includes(searchQuery)
+      );
+    }
+    
+    return products;
+  }
 
   const res = await shopifyFetch<ShopifyProductsOperation>({
     query: getProductsQuery,

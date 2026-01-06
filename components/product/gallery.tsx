@@ -18,7 +18,7 @@ export function Gallery({ images }: { images: { src: string; altText: string }[]
 
   return (
     <form>
-      <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden">
+      <div className="relative aspect-square w-full max-h-[550px] overflow-hidden">
         {images[imageIndex] && (
           <Image
             className="h-full w-full object-contain"
@@ -60,12 +60,12 @@ export function Gallery({ images }: { images: { src: string; altText: string }[]
       </div>
 
       {images.length > 1 ? (
-        <ul className="my-12 flex items-center flex-wrap justify-center gap-2 overflow-auto py-1 lg:mb-0">
+        <ul className="my-12 flex items-center flex-wrap justify-center gap-2 py-1 lg:mb-0">
           {images.map((image, index) => {
             const isActive = index === imageIndex;
 
             return (
-              <li key={image.src} className="h-20 w-20">
+              <li key={`${image.src}-${index}`} className="h-20 w-20">
                 <button
                   formAction={() => {
                     const newState = updateImage(index.toString());

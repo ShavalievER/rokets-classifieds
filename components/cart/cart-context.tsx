@@ -11,7 +11,8 @@ import React, {
   use,
   useContext,
   useMemo,
-  useOptimistic
+  useOptimistic,
+  useEffect
 } from 'react';
 
 type UpdateType = 'plus' | 'minus' | 'delete';
@@ -23,7 +24,7 @@ type CartAction =
     }
   | {
       type: 'ADD_ITEM';
-      payload: { variant: ProductVariant; product: Product };
+      payload: { variant: ProductVariant; product: Product; deliveryPrice?: number };
     };
 
 type CartContextType = {
@@ -46,11 +47,11 @@ function updateCartItem(
     updateType === 'plus' ? item.quantity + 1 : item.quantity - 1;
   if (newQuantity === 0) return null;
 
-  const singleItemAmount = Number(item.cost.totalAmount.amount) / item.quantity;
-  const newTotalAmount = calculateItemCost(
-    newQuantity,
-    singleItemAmount.toString()
-  );
+  // Calculate single item amount (including delivery if it was added)
+  // Delivery is added once per item, so we need to preserve it
+  const totalAmount = Number(item.cost.totalAmount.amount);
+  const singleItemAmount = totalAmount / item.quantity;
+  const newTotalAmount = singleItemAmount * newQuantity;
 
   return {
     ...item,
@@ -59,7 +60,7 @@ function updateCartItem(
       ...item.cost,
       totalAmount: {
         ...item.cost.totalAmount,
-        amount: newTotalAmount
+        amount: newTotalAmount.toString()
       }
     }
   };
@@ -68,17 +69,20 @@ function updateCartItem(
 function createOrUpdateCartItem(
   existingItem: CartItem | undefined,
   variant: ProductVariant,
-  product: Product
+  product: Product,
+  deliveryPrice?: number
 ): CartItem {
   const quantity = existingItem ? existingItem.quantity + 1 : 1;
-  const totalAmount = calculateItemCost(quantity, variant.price.amount);
+  const itemPrice = Number(variant.price.amount);
+  const deliveryCost = deliveryPrice || 0;
+  const totalAmount = (itemPrice + deliveryCost) * quantity;
 
   return {
     id: existingItem?.id,
     quantity,
     cost: {
       totalAmount: {
-        amount: totalAmount,
+        amount: totalAmount.toString(),
         currencyCode: variant.price.currencyCode
       }
     },
@@ -163,14 +167,15 @@ function cartReducer(state: Cart | undefined, action: CartAction): Cart {
       };
     }
     case 'ADD_ITEM': {
-      const { variant, product } = action.payload;
+      const { variant, product, deliveryPrice } = action.payload;
       const existingItem = currentCart.lines.find(
         (item) => item.merchandise.id === variant.id
       );
       const updatedItem = createOrUpdateCartItem(
         existingItem,
         variant,
-        product
+        product,
+        deliveryPrice
       );
 
       const updatedLines = existingItem
@@ -223,8 +228,8 @@ export function useCart() {
     });
   };
 
-  const addCartItem = (variant: ProductVariant, product: Product) => {
-    updateOptimisticCart({ type: 'ADD_ITEM', payload: { variant, product } });
+  const addCartItem = (variant: ProductVariant, product: Product, deliveryPrice?: number) => {
+    updateOptimisticCart({ type: 'ADD_ITEM', payload: { variant, product, deliveryPrice } });
   };
 
   return useMemo(

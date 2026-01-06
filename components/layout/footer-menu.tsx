@@ -19,7 +19,7 @@ export function FooterMenuItem({ item }: { item: Menu }) {
       <Link
         href={item.path}
         className={clsx(
-          'block p-2 text-lg underline-offset-4 hover:text-black hover:underline md:inline-block md:text-sm dark:hover:text-neutral-300',
+          'inline-block text-sm underline-offset-4 hover:text-black hover:underline dark:hover:text-neutral-300',
           {
             'text-black dark:text-neutral-300': active
           }
@@ -36,7 +36,7 @@ export default function FooterMenu({ menu }: { menu: Menu[] }) {
 
   return (
     <nav>
-      <ul>
+      <ul className="flex flex-wrap items-center gap-4 md:gap-6">
         {menu.map((item: Menu) => {
           return <FooterMenuItem key={item.title} item={item} />;
         })}

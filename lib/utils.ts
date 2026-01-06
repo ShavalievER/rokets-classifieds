@@ -1,8 +1,20 @@
 import { ReadonlyURLSearchParams } from 'next/navigation';
 
-export const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
-  ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-  : 'http://localhost:3000';
+const getBaseUrl = () => {
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+  
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}${basePath}`;
+  }
+  
+  if (process.env.NEXT_PUBLIC_SITE_URL) {
+    return `${process.env.NEXT_PUBLIC_SITE_URL}${basePath}`;
+  }
+  
+  return `http://localhost:3000${basePath}`;
+};
+
+export const baseUrl = getBaseUrl();
 
 export const createUrl = (
   pathname: string,
