@@ -140,7 +140,24 @@ const server = http.createServer((req, res) => {
   
   <div class="section">
     <h2>Current Memory Usage:</h2>
-    <pre>${JSON.stringify(takeMemorySnapshot('Current'), null, 2)}</pre>
+    <pre>${JSON.stringify((() => {
+      const mem = process.memoryUsage();
+      const v8Heap = v8.getHeapStatistics();
+      return {
+        timestamp: new Date().toISOString(),
+        memory: {
+          rss: Math.round(mem.rss / 1024 / 1024) + ' MB',
+          heapTotal: Math.round(mem.heapTotal / 1024 / 1024) + ' MB',
+          heapUsed: Math.round(mem.heapUsed / 1024 / 1024) + ' MB',
+          external: Math.round(mem.external / 1024 / 1024) + ' MB'
+        },
+        v8Heap: {
+          total: Math.round(v8Heap.total_heap_size / 1024 / 1024) + ' MB',
+          used: Math.round(v8Heap.used_heap_size / 1024 / 1024) + ' MB',
+          limit: Math.round(v8Heap.heap_size_limit / 1024 / 1024) + ' MB'
+        }
+      };
+    })(), null, 2)}</pre>
   </div>
   
   ${serverState.memorySnapshots.length > 0 ? `
