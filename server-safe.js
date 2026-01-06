@@ -68,61 +68,20 @@ const server = http.createServer((req, res) => {
   
   ${serverState.prepareSuccess && serverState.nextApp ? `
     <div class="section">
-      <p class="success">✅ Next.js is ready! Trying to handle request...</p>
+      <p class="success">✅ Next.js is ready!</p>
+      <p><strong>Note:</strong> Next.js handler is disabled to prevent crashes. This is a diagnostic mode.</p>
+      <p>To enable Next.js, you need to fix the handler errors first.</p>
     </div>
   ` : ''}
 </body>
 </html>
     `;
     
-    // If Next.js is ready, try to use it (but catch all errors)
-    if (serverState.prepareSuccess && serverState.nextApp && serverState.handle) {
-      try {
-        // Handle request with error catching
-        const handlePromise = serverState.handle(req, res);
-        
-        // If handle returns a promise, catch errors
-        if (handlePromise && typeof handlePromise.catch === 'function') {
-          handlePromise.catch((err) => {
-            console.error('Error in Next.js handler:', err);
-            serverState.errors.push(`Handler error: ${err.message}`);
-            serverState.errors.push(`Handler stack: ${err.stack}`);
-            
-            // If headers not sent, show error page
-            if (!res.headersSent) {
-              const errorHtml = `
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Next.js Handler Error</title>
-  <style>
-    body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
-    h1 { color: #f44336; }
-    .error { color: #f44336; }
-    pre { background: #2a2a2a; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 12px; }
-  </style>
-</head>
-<body>
-  <h1>❌ Next.js Handler Error</h1>
-  <p class="error">Error: ${err.message}</p>
-  <pre>${err.stack}</pre>
-  <p><a href="/" style="color: #4CAF50;">Back to diagnostics</a></p>
-</body>
-</html>
-              `;
-              res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
-              res.end(errorHtml);
-            }
-          });
-        }
-        return; // Let Next.js handle the request
-      } catch (err) {
-        console.error('Error calling handler:', err);
-        serverState.errors.push(`Handler setup error: ${err.message}`);
-        serverState.errors.push(`Handler setup stack: ${err.stack}`);
-        // Fall through to show diagnostics
-      }
-    }
+    // DISABLED: Don't try to use Next.js handler - it causes crashes
+    // Always show diagnostics instead
+    // if (serverState.prepareSuccess && serverState.nextApp && serverState.handle) {
+    //   ... handler code ...
+    // }
     
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
