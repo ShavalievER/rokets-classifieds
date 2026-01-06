@@ -42,9 +42,15 @@ app.prepare().then(() => {
     const url = req.url;
     console.log(`[${new Date().toISOString()}] ${req.method} ${url}`);
     
-    // Handle request
-    handle(req, res);
-  }).listen(port, (err) => {
+    // Handle request with error catching
+    try {
+      handle(req, res);
+    } catch (error) {
+      console.error('Error handling request:', error);
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Internal Server Error');
+    }
+  }).listen(port, '0.0.0.0', (err) => {
     if (err) {
       console.error('Failed to start server:', err);
       process.exit(1);
