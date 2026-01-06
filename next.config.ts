@@ -2,10 +2,17 @@ export default {
   // Base path for deployment at /demo
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
   assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH || '',
+  // Optimize for low-memory environments (shared hosting)
   experimental: {
-    ppr: true,
+    // Disable PPR to reduce memory usage during build
+    // ppr: true,
     inlineCss: true,
-    useCache: true
+    // useCache: true,
+  },
+  // Reduce memory usage during build
+  swcMinify: true,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production',
   },
   images: {
     formats: ['image/avif', 'image/webp'],
