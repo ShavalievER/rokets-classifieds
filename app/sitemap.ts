@@ -1,5 +1,5 @@
 import { getCollections, getPages, getProducts } from 'lib/shopify';
-import { baseUrl, validateEnvironmentVariables } from 'lib/utils';
+import { baseUrl } from 'lib/utils';
 import { MetadataRoute } from 'next';
 
 type Route = {
@@ -10,7 +10,8 @@ type Route = {
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  validateEnvironmentVariables();
+  // Note: validateEnvironmentVariables() is not called here
+  // because the project works in demo mode without Shopify variables
 
   const routesMap = [''].map((route) => ({
     url: `${baseUrl}${route}`,
@@ -31,12 +32,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }))
   );
 
-  const pagesPromise = getPages().then((pages) =>
-    pages.map((page) => ({
-      url: `${baseUrl}/${page.handle}`,
-      lastModified: page.updatedAt
-    }))
-  );
+  // getPages() may fail in demo mode, so we catch the error
+  const pagesPromise = getPages()
+    .then((pages) =>
+      pages.map((page) => ({
+        url: `${baseUrl}/${page.handle}`,
+        lastModified: page.updatedAt
+      }))
+    )
+    .catch(() => []); // Return empty array if getPages fails (demo mode)
 
   let fetchedRoutes: Route[] = [];
 
@@ -45,7 +49,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       await Promise.all([collectionsPromise, productsPromise, pagesPromise])
     ).flat();
   } catch (error) {
-    throw JSON.stringify(error, null, 2);
+    // In demo mode, some functions may fail, so we return at least the base routes
+    console.error('Error generating sitemap:', error);
+    return routesMap;
   }
 
   return [...routesMap, ...fetchedRoutes];

@@ -2,8 +2,6 @@
   "version": 4,
   "routes": {
     "/_global-error": {
-      "renderingMode": "PARTIALLY_STATIC",
-      "experimentalPPR": true,
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -13,117 +11,12 @@
           "type": "header",
           "key": "content-type",
           "value": "multipart/form-data;.*"
-        },
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight"
         }
       ],
       "initialRevalidateSeconds": false,
       "srcRoute": "/_global-error",
       "dataRoute": "/_global-error.rsc",
-      "prefetchDataRoute": "/_global-error.prefetch.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/_not-found": {
-      "initialStatus": 404,
-      "renderingMode": "PARTIALLY_STATIC",
-      "experimentalPPR": true,
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        },
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight"
-        }
-      ],
-      "initialRevalidateSeconds": 86400,
-      "initialExpireSeconds": 604800,
-      "srcRoute": "/_not-found",
-      "dataRoute": "/_not-found.rsc",
-      "prefetchDataRoute": "/_not-found.prefetch.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/account": {
-      "renderingMode": "PARTIALLY_STATIC",
-      "experimentalPPR": true,
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        },
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight"
-        }
-      ],
-      "initialRevalidateSeconds": 86400,
-      "initialExpireSeconds": 604800,
-      "srcRoute": "/account",
-      "dataRoute": "/account.rsc",
-      "prefetchDataRoute": "/account.prefetch.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/checkout": {
-      "renderingMode": "PARTIALLY_STATIC",
-      "experimentalPPR": true,
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        },
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight"
-        }
-      ],
-      "initialRevalidateSeconds": 86400,
-      "initialExpireSeconds": 604800,
-      "srcRoute": "/checkout",
-      "dataRoute": "/checkout.rsc",
-      "prefetchDataRoute": "/checkout.prefetch.rsc",
+      "prefetchDataRoute": null,
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -139,7 +32,6 @@
         "content-type": "image/x-icon",
         "x-next-cache-tags": "_N_T_/layout,_N_T_/favicon.ico/layout,_N_T_/favicon.ico/route,_N_T_/favicon.ico"
       },
-      "renderingMode": "STATIC",
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -164,9 +56,12 @@
         "x-next-revalidate-tag-token"
       ]
     },
-    "/orders": {
-      "renderingMode": "PARTIALLY_STATIC",
-      "experimentalPPR": true,
+    "/opengraph-image": {
+      "initialHeaders": {
+        "cache-control": "public, max-age=0, must-revalidate",
+        "content-type": "image/png",
+        "x-next-cache-tags": "_N_T_/layout,_N_T_/opengraph-image/layout,_N_T_/opengraph-image/route,_N_T_/opengraph-image"
+      },
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -176,51 +71,12 @@
           "type": "header",
           "key": "content-type",
           "value": "multipart/form-data;.*"
-        },
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight"
         }
       ],
-      "initialRevalidateSeconds": 86400,
-      "initialExpireSeconds": 604800,
-      "srcRoute": "/orders",
-      "dataRoute": "/orders.rsc",
-      "prefetchDataRoute": "/orders.prefetch.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/": {
-      "renderingMode": "PARTIALLY_STATIC",
-      "experimentalPPR": true,
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        },
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight"
-        }
-      ],
-      "initialRevalidateSeconds": 86400,
-      "initialExpireSeconds": 604800,
-      "srcRoute": "/",
-      "dataRoute": "/index.rsc",
-      "prefetchDataRoute": "/index.prefetch.rsc",
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/opengraph-image",
+      "dataRoute": null,
+      "prefetchDataRoute": null,
       "allowHeader": [
         "host",
         "x-matched-path",
@@ -236,7 +92,6 @@
         "content-type": "text/plain",
         "x-next-cache-tags": "_N_T_/layout,_N_T_/robots.txt/layout,_N_T_/robots.txt/route,_N_T_/robots.txt"
       },
-      "renderingMode": "STATIC",
       "experimentalBypassFor": [
         {
           "type": "header",
@@ -260,183 +115,9 @@
         "x-next-revalidated-tags",
         "x-next-revalidate-tag-token"
       ]
-    },
-    "/search": {
-      "renderingMode": "PARTIALLY_STATIC",
-      "experimentalPPR": true,
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        },
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight"
-        }
-      ],
-      "initialRevalidateSeconds": 86400,
-      "initialExpireSeconds": 604800,
-      "srcRoute": "/search",
-      "dataRoute": "/search.rsc",
-      "prefetchDataRoute": "/search.prefetch.rsc",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
     }
   },
-  "dynamicRoutes": {
-    "/[page]": {
-      "experimentalPPR": true,
-      "renderingMode": "PARTIALLY_STATIC",
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        },
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight"
-        }
-      ],
-      "routeRegex": "^/([^/]+?)(?:/)?$",
-      "dataRoute": "/[page].rsc",
-      "fallback": "/[page]",
-      "fallbackRevalidate": 86400,
-      "fallbackExpire": 604800,
-      "fallbackRootParams": [],
-      "fallbackSourceRoute": "/[page]",
-      "fallbackRouteParams": [
-        {
-          "paramName": "page",
-          "paramType": "dynamic",
-          "isParallelRouteParam": false
-        }
-      ],
-      "dataRouteRegex": "^/([^/]+?)\\.rsc$",
-      "prefetchDataRoute": "/[page].prefetch.rsc",
-      "prefetchDataRouteRegex": "^/([^/]+?)\\.prefetch\\.rsc$",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/product/[handle]": {
-      "experimentalPPR": true,
-      "renderingMode": "PARTIALLY_STATIC",
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        },
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight"
-        }
-      ],
-      "routeRegex": "^/product/([^/]+?)(?:/)?$",
-      "dataRoute": "/product/[handle].rsc",
-      "fallback": "/product/[handle]",
-      "fallbackRevalidate": 86400,
-      "fallbackExpire": 604800,
-      "fallbackRootParams": [],
-      "fallbackSourceRoute": "/product/[handle]",
-      "fallbackRouteParams": [
-        {
-          "paramName": "handle",
-          "paramType": "dynamic",
-          "isParallelRouteParam": false
-        }
-      ],
-      "dataRouteRegex": "^/product/([^/]+?)\\.rsc$",
-      "prefetchDataRoute": "/product/[handle].prefetch.rsc",
-      "prefetchDataRouteRegex": "^/product/([^/]+?)\\.prefetch\\.rsc$",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    },
-    "/search/[collection]/[[...subcategory]]": {
-      "experimentalPPR": true,
-      "renderingMode": "PARTIALLY_STATIC",
-      "experimentalBypassFor": [
-        {
-          "type": "header",
-          "key": "next-action"
-        },
-        {
-          "type": "header",
-          "key": "content-type",
-          "value": "multipart/form-data;.*"
-        },
-        {
-          "type": "header",
-          "key": "user-agent",
-          "value": "[\\w-]+-Google|Google-[\\w-]+|Chrome-Lighthouse|Slurp|DuckDuckBot|baiduspider|yandex|sogou|bitlybot|tumblr|vkShare|quora link preview|redditbot|ia_archiver|Bingbot|BingPreview|applebot|facebookexternalhit|facebookcatalog|Twitterbot|LinkedInBot|Slackbot|Discordbot|WhatsApp|SkypeUriPreview|Yeti|googleweblight"
-        }
-      ],
-      "routeRegex": "^/search/([^/]+?)(?:/(.+?))?(?:/)?$",
-      "dataRoute": "/search/[collection]/[[...subcategory]].rsc",
-      "fallback": "/search/[collection]/[[...subcategory]]",
-      "fallbackRevalidate": 86400,
-      "fallbackExpire": 604800,
-      "fallbackRootParams": [],
-      "fallbackSourceRoute": "/search/[collection]/[[...subcategory]]",
-      "fallbackRouteParams": [
-        {
-          "paramName": "collection",
-          "paramType": "dynamic",
-          "isParallelRouteParam": false
-        },
-        {
-          "paramName": "subcategory",
-          "paramType": "optional-catchall",
-          "isParallelRouteParam": false
-        }
-      ],
-      "dataRouteRegex": "^/search/([^/]+?)(?:/(.+?))?\\.rsc$",
-      "prefetchDataRoute": "/search/[collection]/[[...subcategory]].prefetch.rsc",
-      "prefetchDataRouteRegex": "^/search/([^/]+?)(?:/(.+?))?\\.prefetch\\.rsc$",
-      "allowHeader": [
-        "host",
-        "x-matched-path",
-        "x-prerender-revalidate",
-        "x-prerender-revalidate-if-generated",
-        "x-next-revalidated-tags",
-        "x-next-revalidate-tag-token"
-      ]
-    }
-  },
+  "dynamicRoutes": {},
   "notFoundRoutes": [],
   "preview": {
     "previewModeId": "704c307b0fa01065103db14d3e4c76f0",

@@ -1,7 +1,7 @@
 var R=require("../../chunks/[turbopack]_runtime.js")("server/app/opengraph-image/route.js")
-R.c("server/chunks/[root-of-the-server]__ea3eb804._.js")
-R.c("server/chunks/[root-of-the-server]__833b0586._.js")
-R.c("server/chunks/4f160_next_dist_39298606._.js")
-R.c("server/chunks/_next-internal_server_app_opengraph-image_route_actions_ca3aeb2a.js")
-R.m(29119)
-module.exports=R.m(29119).exports
+R.c("server/chunks/[root-of-the-server]__85da124e._.js")
+R.c("server/chunks/[root-of-the-server]__c4240273._.js")
+R.c("server/chunks/177b5_next_dist_f7d92054._.js")
+R.c("server/chunks/commerce__next-internal_server_app_opengraph-image_route_actions_5f4da1fd.js")
+R.m(94296)
+module.exports=R.m(94296).exports

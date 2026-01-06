@@ -5,11 +5,7 @@ import {
 } from 'lib/constants';
 import { isShopifyError } from 'lib/type-guards';
 import { ensureStartsWith } from 'lib/utils';
-import {
-  revalidateTag,
-  unstable_cacheTag as cacheTag,
-  unstable_cacheLife as cacheLife
-} from 'next/cache';
+import { revalidateTag } from 'next/cache';
 import { cookies, headers } from 'next/headers';
 import { NextRequest, NextResponse } from 'next/server';
 import {
@@ -333,9 +329,6 @@ export async function getCart(): Promise<Cart | undefined> {
 export async function getCollection(
   handle: string
 ): Promise<Collection | undefined> {
-  'use cache';
-  cacheTag(TAGS.collections);
-  cacheLife('days');
 
   if (!endpoint) {
     // Используем демо-категории вместо Shopify
@@ -420,9 +413,6 @@ export async function getCollectionProducts({
     location?: string;
   };
 }): Promise<Product[]> {
-  'use cache';
-  cacheTag(TAGS.collections, TAGS.products);
-  cacheLife('days');
 
   if (!endpoint) {
     // Используем демо-данные вместо Shopify
@@ -450,9 +440,6 @@ export async function getCollectionProducts({
 }
 
 export async function getCollections(): Promise<Collection[]> {
-  'use cache';
-  cacheTag(TAGS.collections);
-  cacheLife('days');
 
   if (!endpoint) {
     // Используем демо-категории вместо Shopify
@@ -500,9 +487,6 @@ export async function getCollections(): Promise<Collection[]> {
 }
 
 export async function getMenu(handle: string): Promise<Menu[]> {
-  'use cache';
-  cacheTag(TAGS.collections);
-  cacheLife('days');
 
   if (!endpoint) {
     // Используем демо-меню вместо Shopify
@@ -529,9 +513,11 @@ export async function getMenu(handle: string): Promise<Menu[]> {
 }
 
 export async function getPage(handle: string): Promise<Page> {
-  'use cache';
-  cacheTag('pages');
-  cacheLife('days');
+  
+  if (!endpoint) {
+    // Demo mode: throw not found
+    throw new Error('Page not found');
+  }
   
   const res = await shopifyFetch<ShopifyPageOperation>({
     query: getPageQuery,
@@ -542,6 +528,11 @@ export async function getPage(handle: string): Promise<Page> {
 }
 
 export async function getPages(): Promise<Page[]> {
+  if (!endpoint) {
+    // Demo mode: return empty array (no pages in demo)
+    return [];
+  }
+
   const res = await shopifyFetch<ShopifyPagesOperation>({
     query: getPagesQuery
   });
@@ -550,9 +541,6 @@ export async function getPages(): Promise<Page[]> {
 }
 
 export async function getProduct(handle: string): Promise<Product | undefined> {
-  'use cache';
-  cacheTag(TAGS.products);
-  cacheLife('days');
 
   if (!endpoint) {
     // Используем демо-данные вместо Shopify
@@ -573,9 +561,6 @@ export async function getProduct(handle: string): Promise<Product | undefined> {
 export async function getProductRecommendations(
   productId: string
 ): Promise<Product[]> {
-  'use cache';
-  cacheTag(TAGS.products);
-  cacheLife('days');
 
   if (!endpoint) {
     // Используем демо-данные вместо Shopify
@@ -602,9 +587,6 @@ export async function getProducts({
   reverse?: boolean;
   sortKey?: string;
 }): Promise<Product[]> {
-  'use cache';
-  cacheTag(TAGS.products);
-  cacheLife('days');
 
   if (!endpoint) {
     // Используем демо-данные вместо Shopify

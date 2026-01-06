@@ -138,7 +138,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "C:\\Dev\\CursorProjects\\Rokets_clsfd\\commerce",
+    "outputFileTracingRoot": "C:\\Dev\\CursorProjects\\Rokets_clsfd",
     "experimental": {
       "useSkewCookie": false,
       "cacheLife": {
@@ -184,12 +184,11 @@
       "appNavFailHandling": false,
       "prerenderEarlyExit": true,
       "serverMinification": true,
-      "enablePrerenderSourceMaps": true,
       "serverSourceMaps": false,
       "linkNoTouchStart": false,
       "caseSensitiveRoutes": false,
       "clientSegmentCache": true,
-      "rdcForNavigations": true,
+      "rdcForNavigations": false,
       "clientParamParsing": false,
       "dynamicOnHover": false,
       "preloadEntriesOnStart": true,
@@ -223,7 +222,7 @@
       "typedEnv": false,
       "parallelServerCompiles": false,
       "parallelServerBuildTraces": false,
-      "ppr": true,
+      "ppr": false,
       "authInterrupts": false,
       "webpackMemoryOptimizations": false,
       "optimizeServerReact": true,
@@ -239,9 +238,9 @@
       "serverComponentsHmrCache": true,
       "staticGenerationMaxConcurrency": 8,
       "staticGenerationMinPagesPerWorker": 25,
-      "cacheComponents": true,
+      "cacheComponents": false,
       "inlineCss": true,
-      "useCache": true,
+      "useCache": false,
       "globalNotFound": false,
       "browserDebugInfoInTerminal": false,
       "lockDistDir": true,
@@ -331,11 +330,11 @@
     "bundlePagesRouterDependencies": false,
     "configFileName": "next.config.ts",
     "turbopack": {
-      "root": "C:\\Dev\\CursorProjects\\Rokets_clsfd\\commerce"
+      "root": "C:\\Dev\\CursorProjects\\Rokets_clsfd"
     }
   },
   "appDir": "C:\\Dev\\CursorProjects\\Rokets_clsfd\\commerce",
-  "relativeAppDir": "",
+  "relativeAppDir": "commerce",
   "files": [
     ".next\\routes-manifest.json",
     ".next\\server\\pages-manifest.json",

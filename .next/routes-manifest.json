@@ -58,16 +58,7 @@
       "routeKeys": {
         "nxtPhandle": "nxtPhandle"
       },
-      "namedRegex": "^/product/(?<nxtPhandle>[^/]+?)(?:/)?$",
-      "prefetchSegmentDataRoutes": [
-        {
-          "destination": "/product/[handle].segments/product/$d$handle$segment",
-          "source": "^/product/(?<nxtPhandle>[^/]+?)\\.segments/product/\\$d\\$handle(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
-          "routeKeys": {
-            "nxtPhandle": "nxtPhandle"
-          }
-        }
-      ]
+      "namedRegex": "^/product/(?<nxtPhandle>[^/]+?)(?:/)?$"
     },
     {
       "page": "/search/[collection]/opengraph-image",
@@ -84,17 +75,7 @@
         "nxtPcollection": "nxtPcollection",
         "nxtPsubcategory": "nxtPsubcategory"
       },
-      "namedRegex": "^/search/(?<nxtPcollection>[^/]+?)(?:/(?<nxtPsubcategory>.+?))?(?:/)?$",
-      "prefetchSegmentDataRoutes": [
-        {
-          "destination": "/search/[collection]/[[...subcategory]].segments/search/$d$collection/$oc$subcategory$segment",
-          "source": "^/search/(?<nxtPcollection>[^/]+?)(?:/(?<nxtPsubcategory>.+?))?\\.segments/search/\\$d\\$collection/\\$oc\\$subcategory(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
-          "routeKeys": {
-            "nxtPcollection": "nxtPcollection",
-            "nxtPsubcategory": "nxtPsubcategory"
-          }
-        }
-      ]
+      "namedRegex": "^/search/(?<nxtPcollection>[^/]+?)(?:/(?<nxtPsubcategory>.+?))?(?:/)?$"
     },
     {
       "page": "/[page]",
@@ -102,16 +83,7 @@
       "routeKeys": {
         "nxtPpage": "nxtPpage"
       },
-      "namedRegex": "^/(?<nxtPpage>[^/]+?)(?:/)?$",
-      "prefetchSegmentDataRoutes": [
-        {
-          "destination": "/[page].segments/$d$page$segment",
-          "source": "^/(?<nxtPpage>[^/]+?)\\.segments/\\$d\\$page(?<segment>/__PAGE__\\.segment\\.rsc|\\.segment\\.rsc)(?:/)?$",
-          "routeKeys": {
-            "nxtPpage": "nxtPpage"
-          }
-        }
-      ]
+      "namedRegex": "^/(?<nxtPpage>[^/]+?)(?:/)?$"
     },
     {
       "page": "/[page]/opengraph-image",
@@ -208,12 +180,5 @@
   "rewriteHeaders": {
     "pathHeader": "x-nextjs-rewritten-path",
     "queryHeader": "x-nextjs-rewritten-query"
-  },
-  "ppr": {
-    "chain": {
-      "headers": {
-        "next-resume": "1"
-      }
-    }
   }
 }

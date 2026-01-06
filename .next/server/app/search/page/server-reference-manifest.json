@@ -1,184 +1,64 @@
 {
   "node": {
-    "00a9bdb057a45cf911533086bf625e5c9f8d2e58f8": {
+    "0064f13e42753a0d3a3a73ab84fea3214d17ce9dd1": {
       "workers": {
         "app/search/page": {
-          "moduleId": 93140,
+          "moduleId": 53359,
           "async": false,
           "exportedName": "createCartAndSetCookie",
-          "filename": "components/cart/actions.ts"
+          "filename": "commerce/components/cart/actions.ts"
         }
       },
       "layer": {
         "app/search/page": "action-browser"
       },
       "exportedName": "createCartAndSetCookie",
-      "filename": "components/cart/actions.ts"
+      "filename": "commerce/components/cart/actions.ts"
     },
-    "00c9c4446cc4834eec95923ae4db61fc2d7c4b713b": {
+    "00db1324687371099ee5e1e4298b4642235f85b3ef": {
       "workers": {
         "app/search/page": {
-          "moduleId": 93140,
+          "moduleId": 53359,
           "async": false,
           "exportedName": "redirectToCheckout",
-          "filename": "components/cart/actions.ts"
+          "filename": "commerce/components/cart/actions.ts"
         }
       },
       "layer": {
         "app/search/page": "action-browser"
       },
       "exportedName": "redirectToCheckout",
-      "filename": "components/cart/actions.ts"
+      "filename": "commerce/components/cart/actions.ts"
     },
-    "6034ca61ccef63a4ac6a9cb52b6f1fe6faba7f2381": {
+    "60b5aa225bd3ea9846f6062c5c80509a39d744628a": {
       "workers": {
         "app/search/page": {
-          "moduleId": 93140,
+          "moduleId": 53359,
           "async": false,
           "exportedName": "removeItem",
-          "filename": "components/cart/actions.ts"
+          "filename": "commerce/components/cart/actions.ts"
         }
       },
       "layer": {
         "app/search/page": "action-browser"
       },
       "exportedName": "removeItem",
-      "filename": "components/cart/actions.ts"
+      "filename": "commerce/components/cart/actions.ts"
     },
-    "603b506a1e266f34072a78052691ce64cc986dbcb7": {
+    "60202e70e661fe0a0b419bd41fcfd18866de7a9ae3": {
       "workers": {
         "app/search/page": {
-          "moduleId": 93140,
+          "moduleId": 53359,
           "async": false,
           "exportedName": "updateItemQuantity",
-          "filename": "components/cart/actions.ts"
+          "filename": "commerce/components/cart/actions.ts"
         }
       },
       "layer": {
         "app/search/page": "action-browser"
       },
       "exportedName": "updateItemQuantity",
-      "filename": "components/cart/actions.ts"
-    },
-    "804b72435cd58c829a9f44b254ec9fc1108fbfc416": {
-      "workers": {
-        "app/search/page": {
-          "moduleId": 93140,
-          "async": false,
-          "exportedName": "$$RSC_SERVER_CACHE_2",
-          "filename": "lib/shopify/index.ts"
-        }
-      },
-      "layer": {
-        "app/search/page": "rsc"
-      },
-      "exportedName": "$$RSC_SERVER_CACHE_2",
-      "filename": "lib/shopify/index.ts"
-    },
-    "c0160ad0ee6e22f8851456ad426c023654212629c3": {
-      "workers": {
-        "app/search/page": {
-          "moduleId": 93140,
-          "async": false,
-          "exportedName": "$$RSC_SERVER_CACHE_5",
-          "filename": "lib/shopify/index.ts"
-        }
-      },
-      "layer": {
-        "app/search/page": "rsc"
-      },
-      "exportedName": "$$RSC_SERVER_CACHE_5",
-      "filename": "lib/shopify/index.ts"
-    },
-    "c02aa9004cde06a080ddc597e8661bec1b8efa28b6": {
-      "workers": {
-        "app/search/page": {
-          "moduleId": 93140,
-          "async": false,
-          "exportedName": "$$RSC_SERVER_CACHE_7",
-          "filename": "lib/shopify/index.ts"
-        }
-      },
-      "layer": {
-        "app/search/page": "rsc"
-      },
-      "exportedName": "$$RSC_SERVER_CACHE_7",
-      "filename": "lib/shopify/index.ts"
-    },
-    "c037c3d99798e786f2c5d27f1c8757afd1cf8d3be1": {
-      "workers": {
-        "app/search/page": {
-          "moduleId": 93140,
-          "async": false,
-          "exportedName": "$$RSC_SERVER_CACHE_1",
-          "filename": "lib/shopify/index.ts"
-        }
-      },
-      "layer": {
-        "app/search/page": "rsc"
-      },
-      "exportedName": "$$RSC_SERVER_CACHE_1",
-      "filename": "lib/shopify/index.ts"
-    },
-    "c05ebbeb134999e6bb796042717286773b6e4bf09b": {
-      "workers": {
-        "app/search/page": {
-          "moduleId": 93140,
-          "async": false,
-          "exportedName": "$$RSC_SERVER_CACHE_6",
-          "filename": "lib/shopify/index.ts"
-        }
-      },
-      "layer": {
-        "app/search/page": "rsc"
-      },
-      "exportedName": "$$RSC_SERVER_CACHE_6",
-      "filename": "lib/shopify/index.ts"
-    },
-    "c09f87d47552af9d9b112f53723a98611d4ea05c69": {
-      "workers": {
-        "app/search/page": {
-          "moduleId": 93140,
-          "async": false,
-          "exportedName": "$$RSC_SERVER_CACHE_0",
-          "filename": "lib/shopify/index.ts"
-        }
-      },
-      "layer": {
-        "app/search/page": "rsc"
-      },
-      "exportedName": "$$RSC_SERVER_CACHE_0",
-      "filename": "lib/shopify/index.ts"
-    },
-    "c0c984063d36ad2fae2782825a31b85298c7402656": {
-      "workers": {
-        "app/search/page": {
-          "moduleId": 93140,
-          "async": false,
-          "exportedName": "$$RSC_SERVER_CACHE_3",
-          "filename": "lib/shopify/index.ts"
-        }
-      },
-      "layer": {
-        "app/search/page": "rsc"
-      },
-      "exportedName": "$$RSC_SERVER_CACHE_3",
-      "filename": "lib/shopify/index.ts"
-    },
-    "c0e2f641d1cf6974a26c8c2985a03a37151e0f9fa1": {
-      "workers": {
-        "app/search/page": {
-          "moduleId": 93140,
-          "async": false,
-          "exportedName": "$$RSC_SERVER_CACHE_4",
-          "filename": "lib/shopify/index.ts"
-        }
-      },
-      "layer": {
-        "app/search/page": "rsc"
-      },
-      "exportedName": "$$RSC_SERVER_CACHE_4",
-      "filename": "lib/shopify/index.ts"
+      "filename": "commerce/components/cart/actions.ts"
     }
   },
   "edge": {}

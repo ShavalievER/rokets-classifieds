@@ -1,30 +1,30 @@
 {
   "app": {
-    "[project]/app/[page]/page": [
+    "[project]/commerce/app/[page]/page": [
       "static/media/Geist_Variable-s.p.70416cc0.woff2"
     ],
-    "[project]/app/_not-found/page": [
+    "[project]/commerce/app/_not-found/page": [
       "static/media/Geist_Variable-s.p.70416cc0.woff2"
     ],
-    "[project]/app/account/page": [
+    "[project]/commerce/app/account/page": [
       "static/media/Geist_Variable-s.p.70416cc0.woff2"
     ],
-    "[project]/app/checkout/page": [
+    "[project]/commerce/app/checkout/page": [
       "static/media/Geist_Variable-s.p.70416cc0.woff2"
     ],
-    "[project]/app/orders/page": [
+    "[project]/commerce/app/orders/page": [
       "static/media/Geist_Variable-s.p.70416cc0.woff2"
     ],
-    "[project]/app/page": [
+    "[project]/commerce/app/page": [
       "static/media/Geist_Variable-s.p.70416cc0.woff2"
     ],
-    "[project]/app/product/[handle]/page": [
+    "[project]/commerce/app/product/[handle]/page": [
       "static/media/Geist_Variable-s.p.70416cc0.woff2"
     ],
-    "[project]/app/search/[collection]/[[...subcategory]]/page": [
+    "[project]/commerce/app/search/[collection]/[[...subcategory]]/page": [
       "static/media/Geist_Variable-s.p.70416cc0.woff2"
     ],
-    "[project]/app/search/page": [
+    "[project]/commerce/app/search/page": [
       "static/media/Geist_Variable-s.p.70416cc0.woff2"
     ]
   },
