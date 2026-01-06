@@ -116,39 +116,57 @@ if (nextModule) {
     });
     console.log('✅ Next.js app created');
     
-    // Try to prepare (async, non-blocking)
-    diagnostics.checks.push({
+    // Try to prepare (async, non-blocking) with timeout
+    const prepareCheck = {
       name: 'Next.js prepare',
       status: 'starting',
       started: new Date().toISOString()
-    });
+    };
+    diagnostics.checks.push(prepareCheck);
+    
+    console.log('Starting Next.js prepare()...');
+    const prepareStartTime = Date.now();
+    
+    // Set timeout for prepare (60 seconds)
+    const prepareTimeout = setTimeout(() => {
+      if (prepareCheck.status === 'starting') {
+        const elapsed = Math.round((Date.now() - prepareStartTime) / 1000);
+        console.error(`❌ Next.js prepare() timeout after ${elapsed} seconds`);
+        prepareCheck.status = 'timeout';
+        prepareCheck.success = false;
+        prepareCheck.error = `Timeout after ${elapsed} seconds - prepare() never completed`;
+        prepareCheck.completed = new Date().toISOString();
+        prepareCheck.elapsedSeconds = elapsed;
+        diagnostics.errors.push(`Next.js prepare() timeout after ${elapsed} seconds`);
+      }
+    }, 60000); // 60 seconds timeout
     
     nextApp.prepare()
       .then(() => {
-        console.log('✅ Next.js app prepared successfully');
-        const prepareCheck = diagnostics.checks.find(c => c.name === 'Next.js prepare');
-        if (prepareCheck) {
-          prepareCheck.status = 'success';
-          prepareCheck.success = true;
-          prepareCheck.completed = new Date().toISOString();
-        }
+        clearTimeout(prepareTimeout);
+        const elapsed = Math.round((Date.now() - prepareStartTime) / 1000);
+        console.log(`✅ Next.js app prepared successfully in ${elapsed} seconds`);
+        prepareCheck.status = 'success';
+        prepareCheck.success = true;
+        prepareCheck.completed = new Date().toISOString();
+        prepareCheck.elapsedSeconds = elapsed;
       })
       .catch((err) => {
-        console.error('❌ Next.js prepare failed:', err.message);
+        clearTimeout(prepareTimeout);
+        const elapsed = Math.round((Date.now() - prepareStartTime) / 1000);
+        console.error(`❌ Next.js prepare failed after ${elapsed} seconds:`, err.message);
         console.error('Full error:', err);
         console.error('Stack:', err.stack);
         
-        const prepareCheck = diagnostics.checks.find(c => c.name === 'Next.js prepare');
-        if (prepareCheck) {
-          prepareCheck.status = 'failed';
-          prepareCheck.success = false;
-          prepareCheck.error = err.message;
-          prepareCheck.fullError = err.toString();
-          prepareCheck.stack = err.stack;
-          prepareCheck.completed = new Date().toISOString();
-        }
+        prepareCheck.status = 'failed';
+        prepareCheck.success = false;
+        prepareCheck.error = err.message;
+        prepareCheck.fullError = err.toString();
+        prepareCheck.stack = err.stack;
+        prepareCheck.completed = new Date().toISOString();
+        prepareCheck.elapsedSeconds = elapsed;
         
-        diagnostics.errors.push(`Next.js prepare failed: ${err.message}`);
+        diagnostics.errors.push(`Next.js prepare failed after ${elapsed}s: ${err.message}`);
         diagnostics.errors.push(`Full error: ${err.toString()}`);
       });
   } catch (e) {
@@ -209,8 +227,10 @@ const server = http.createServer((req, res) => {
       ${check.loaded !== undefined ? (check.loaded ? '✅ LOADED' : '❌ NOT LOADED') : ''}
       ${check.created !== undefined ? (check.created ? '✅ CREATED' : '❌ NOT CREATED') : ''}
       ${check.status === 'starting' ? '⏳ STARTING...' : ''}
+      ${check.status === 'timeout' ? '⏱️ TIMEOUT' : ''}
       ${check.status === 'success' ? '✅ SUCCESS' : ''}
       ${check.status === 'failed' ? '❌ FAILED' : ''}
+      ${check.elapsedSeconds !== undefined ? `<br><small>Elapsed: ${check.elapsedSeconds}s</small>` : ''}
       ${check.success !== undefined ? (check.success ? '✅ SUCCESS' : '❌ FAILED') : ''}
       ${check.path ? `<br><small>Path: <code>${check.path}</code></small>` : ''}
       ${check.started ? `<br><small>Started: ${check.started}</small>` : ''}
