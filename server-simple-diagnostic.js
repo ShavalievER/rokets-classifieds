@@ -183,8 +183,12 @@ if (nextModule) {
 // Create HTTP server
 console.log('Creating HTTP server...');
 const server = http.createServer((req, res) => {
-  // Update timestamp
+  // Update timestamp and process state
   diagnostics.timestamp = new Date().toISOString();
+  if (processState) {
+    processState.lastUpdate = new Date().toISOString();
+    diagnostics.processState = processState;
+  }
   
   // If Next.js is ready, try to use it
   if (nextApp && diagnostics.checks.find(c => c.name === 'Next.js prepare' && c.success)) {
@@ -248,6 +252,24 @@ const server = http.createServer((req, res) => {
     </ul>
   ` : ''}
   
+  ${diagnostics.processState ? `
+    <h2>Process State:</h2>
+    <div class="check">
+      <strong>Started:</strong> ${diagnostics.processState.started}<br>
+      <strong>Last Update:</strong> ${diagnostics.processState.lastUpdate}<br>
+      <strong>Crashes:</strong> ${diagnostics.processState.crashes || 0}<br>
+      ${diagnostics.processState.lastError ? `
+        <strong class="error">Last Error:</strong><br>
+        <small class="error">Type: ${diagnostics.processState.lastError.type}</small><br>
+        <small class="error">Message: ${diagnostics.processState.lastError.message || diagnostics.processState.lastError.reason}</small><br>
+        <small class="error">Time: ${diagnostics.processState.lastError.timestamp}</small>
+        ${diagnostics.processState.lastError.stack ? `<pre class="error" style="font-size: 10px; margin-top: 5px;">${diagnostics.processState.lastError.stack}</pre>` : ''}
+      ` : ''}
+      ${diagnostics.processState.sigterm ? `<small>Received SIGTERM: ${diagnostics.processState.sigterm}</small>` : ''}
+      ${diagnostics.processState.sigint ? `<small>Received SIGINT: ${diagnostics.processState.sigint}</small>` : ''}
+    </div>
+  ` : ''}
+  
   <h2>Full Diagnostics (JSON):</h2>
   <pre>${JSON.stringify(diagnostics, null, 2)}</pre>
 </body>
@@ -273,13 +295,60 @@ server.on('error', (err) => {
   process.exit(1);
 });
 
+// Track process state
+let processState = {
+  started: new Date().toISOString(),
+  lastUpdate: new Date().toISOString(),
+  crashes: 0
+};
+
+// Update last update time periodically
+setInterval(() => {
+  processState.lastUpdate = new Date().toISOString();
+}, 5000);
+
 process.on('uncaughtException', (err) => {
+  processState.crashes++;
+  processState.lastError = {
+    type: 'uncaughtException',
+    message: err.message,
+    stack: err.stack,
+    timestamp: new Date().toISOString()
+  };
   console.error('❌ UNCAUGHT EXCEPTION:', err);
-  process.exit(1);
+  console.error('Process state:', JSON.stringify(processState, null, 2));
+  // Don't exit immediately - try to log the error
+  setTimeout(() => {
+    process.exit(1);
+  }, 1000);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
+  processState.crashes++;
+  processState.lastError = {
+    type: 'unhandledRejection',
+    reason: reason?.toString(),
+    timestamp: new Date().toISOString()
+  };
   console.error('❌ UNHANDLED REJECTION:', reason);
-  process.exit(1);
+  console.error('Process state:', JSON.stringify(processState, null, 2));
 });
+
+// Handle process signals
+process.on('SIGTERM', () => {
+  console.log('Received SIGTERM - process is being terminated');
+  processState.sigterm = new Date().toISOString();
+  process.exit(0);
+});
+
+process.on('SIGINT', () => {
+  console.log('Received SIGINT - process is being terminated');
+  processState.sigint = new Date().toISOString();
+  process.exit(0);
+});
+
+// Add process state to diagnostics
+if (typeof diagnostics !== 'undefined') {
+  diagnostics.processState = processState;
+}
 
