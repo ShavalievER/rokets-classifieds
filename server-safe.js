@@ -12,7 +12,7 @@ console.log('Port:', port);
 console.log('Base path:', basePath || '(none)');
 
 // Configuration
-const USE_NEXTJS_HANDLER = true; // Enable handler to see errors (with protection)
+const USE_NEXTJS_HANDLER = false; // Disabled - causes process crashes (with protection)
 
 // Track state
 let serverState = {
@@ -72,13 +72,21 @@ const server = http.createServer((req, res) => {
   ${serverState.prepareSuccess && serverState.nextApp ? `
     <div class="section">
       <p class="success">✅ Next.js is ready!</p>
-      <p><strong>Handler Status:</strong> ${USE_NEXTJS_HANDLER ? 'Enabled (may cause crashes)' : 'Disabled (diagnostic mode)'}</p>
-      <p><strong>Next Steps:</strong></p>
+      <p><strong>Handler Status:</strong> Disabled (causes process crashes)</p>
+      <p><strong>Problem:</strong> Even with maximum error protection (domain, setTimeout, try-catch), handler causes Internal Server Error.</p>
+      <p><strong>Possible Causes:</strong></p>
+      <ul>
+        <li>Memory limits (LVE limits on shared hosting)</li>
+        <li>Next.js trying to load something that causes system-level crash</li>
+        <li>Corrupted .next files</li>
+        <li>System restrictions on shared hosting</li>
+      </ul>
+      <p><strong>Solutions to Try:</strong></p>
       <ol>
-        <li>Check errors above (if any)</li>
-        <li>If no errors, the issue is likely in Next.js handler itself</li>
-        <li>Try enabling handler by setting USE_NEXTJS_HANDLER = true in server-safe.js</li>
-        <li>Or try using server.js which has improved error handling</li>
+        <li><strong>Check logs:</strong> cPanel → Error Log or File Manager → logs/nodejs/</li>
+        <li><strong>Contact Verpex support:</strong> Ask about memory limits and Next.js handler crashes</li>
+        <li><strong>Rebuild project:</strong> Run <code>npm run build</code> locally and upload .next folder</li>
+        <li><strong>Try server.js:</strong> It has improved error handling (may show error instead of crashing)</li>
       </ol>
     </div>
   ` : ''}
@@ -86,37 +94,12 @@ const server = http.createServer((req, res) => {
 </html>
     `;
     
-    // Try to use Next.js handler with maximum error protection
+    // Handler is disabled - it causes process crashes that can't be caught
+    // Even with domain, setTimeout, and all error handling, the process dies
+    // This suggests a system-level issue (memory limits, or Next.js internals)
+    
     if (USE_NEXTJS_HANDLER && serverState.prepareSuccess && serverState.nextApp && serverState.handle) {
-      // Use setTimeout to defer handler call - might help avoid immediate crashes
-      setTimeout(() => {
-        try {
-          console.log('Attempting to use Next.js handler (deferred)...');
-          const handlePromise = serverState.handle(req, res);
-          
-          if (handlePromise && typeof handlePromise.catch === 'function') {
-            handlePromise.catch((err) => {
-              console.error('Next.js handler promise error:', err);
-              serverState.errors.push(`Handler promise error: ${err.message}`);
-              
-              if (!res.headersSent) {
-                res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
-                res.end(`Handler error: ${err.message}\n\n${err.stack}`);
-              }
-            });
-          }
-        } catch (err) {
-          console.error('Error calling handler:', err);
-          serverState.errors.push(`Handler sync error: ${err.message}`);
-          
-          if (!res.headersSent) {
-            res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
-            res.end(`Handler sync error: ${err.message}\n\n${err.stack}`);
-          }
-        }
-      }, 0);
-      
-      return; // Let Next.js try to handle (after timeout)
+      serverState.errors.push('Handler is disabled - causes process crashes. prepare() works, but handler causes Internal Server Error.');
     }
     
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
