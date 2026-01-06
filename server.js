@@ -12,6 +12,8 @@ if (majorVersion < 18) {
 }
 
 const dev = process.env.NODE_ENV !== 'production';
+// For subdomain deployment (demo.rokets.delivery), basePath should be empty
+// For path deployment (rokets.delivery/demo), set basePath to '/demo'
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 const port = process.env.PORT || 3001;
 
