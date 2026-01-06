@@ -11,7 +11,8 @@ if (majorVersion < 18) {
   process.exit(1);
 }
 
-const dev = process.env.NODE_ENV !== 'production';
+// Force production mode for deployment
+const dev = false; // Always use production mode on server
 // For subdomain deployment (demo.rokets.delivery), basePath should be empty
 // For path deployment (rokets.delivery/demo), set basePath to '/demo'
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
@@ -19,11 +20,13 @@ const port = process.env.PORT || 3001;
 
 console.log(`Starting Rokets classifieds...`);
 console.log(`Node.js version: ${nodeVersion}`);
+console.log(`NODE_ENV: ${process.env.NODE_ENV || 'not set'}`);
 console.log(`Port: ${port}`);
 console.log(`Base path: ${basePath || '(none)'}`);
+console.log(`Dev mode: ${dev}`);
 
 const app = next({ 
-  dev,
+  dev: dev, // Force production mode
   conf: {
     basePath: basePath,
     assetPrefix: basePath
@@ -33,6 +36,7 @@ const app = next({
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
+  console.log('✅ Next.js app prepared successfully');
   createServer((req, res) => {
     // Log request for debugging
     const url = req.url;
@@ -52,8 +56,27 @@ app.prepare().then(() => {
     console.log(`   PORT: ${port}`);
   });
 }).catch((err) => {
-  console.error('Failed to prepare Next.js app:', err);
+  console.error('❌ Failed to prepare Next.js app:', err);
   console.error('Error details:', err.stack);
+  console.error('Error message:', err.message);
+  
+  // Additional diagnostics
+  const fs = require('fs');
+  const path = require('path');
+  const nextPath = path.join(__dirname, '.next');
+  console.error(`Checking .next folder: ${nextPath}`);
+  if (fs.existsSync(nextPath)) {
+    console.error('✅ .next folder exists');
+    const serverPath = path.join(nextPath, 'server');
+    if (fs.existsSync(serverPath)) {
+      console.error('✅ .next/server folder exists');
+    } else {
+      console.error('❌ .next/server folder NOT found');
+    }
+  } else {
+    console.error('❌ .next folder NOT found');
+  }
+  
   process.exit(1);
 });
 
