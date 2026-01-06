@@ -1,0 +1,873 @@
+{
+  "node": {
+    "00a9bdb057a45cf911533086bf625e5c9f8d2e58f8": {
+      "workers": {
+        "app/[page]/page": {
+          "moduleId": 59547,
+          "async": false,
+          "exportedName": "createCartAndSetCookie",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": 41829,
+          "async": false,
+          "exportedName": "createCartAndSetCookie",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/account/page": {
+          "moduleId": 17715,
+          "async": false,
+          "exportedName": "createCartAndSetCookie",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/checkout/page": {
+          "moduleId": 77473,
+          "async": false,
+          "exportedName": "createCartAndSetCookie",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/orders/page": {
+          "moduleId": 83710,
+          "async": false,
+          "exportedName": "createCartAndSetCookie",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/page": {
+          "moduleId": 92195,
+          "async": false,
+          "exportedName": "createCartAndSetCookie",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/product/[handle]/page": {
+          "moduleId": 90335,
+          "async": false,
+          "exportedName": "createCartAndSetCookie",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/search/[collection]/[[...subcategory]]/page": {
+          "moduleId": 59903,
+          "async": false,
+          "exportedName": "createCartAndSetCookie",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/search/page": {
+          "moduleId": 93140,
+          "async": false,
+          "exportedName": "createCartAndSetCookie",
+          "filename": "components/cart/actions.ts"
+        }
+      },
+      "layer": {
+        "app/[page]/page": "action-browser",
+        "app/_not-found/page": "action-browser",
+        "app/account/page": "action-browser",
+        "app/checkout/page": "action-browser",
+        "app/orders/page": "action-browser",
+        "app/page": "action-browser",
+        "app/product/[handle]/page": "action-browser",
+        "app/search/[collection]/[[...subcategory]]/page": "action-browser",
+        "app/search/page": "action-browser"
+      },
+      "filename": "components/cart/actions.ts",
+      "exportedName": "createCartAndSetCookie"
+    },
+    "00c9c4446cc4834eec95923ae4db61fc2d7c4b713b": {
+      "workers": {
+        "app/[page]/page": {
+          "moduleId": 59547,
+          "async": false,
+          "exportedName": "redirectToCheckout",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": 41829,
+          "async": false,
+          "exportedName": "redirectToCheckout",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/account/page": {
+          "moduleId": 17715,
+          "async": false,
+          "exportedName": "redirectToCheckout",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/checkout/page": {
+          "moduleId": 77473,
+          "async": false,
+          "exportedName": "redirectToCheckout",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/orders/page": {
+          "moduleId": 83710,
+          "async": false,
+          "exportedName": "redirectToCheckout",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/page": {
+          "moduleId": 92195,
+          "async": false,
+          "exportedName": "redirectToCheckout",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/product/[handle]/page": {
+          "moduleId": 90335,
+          "async": false,
+          "exportedName": "redirectToCheckout",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/search/[collection]/[[...subcategory]]/page": {
+          "moduleId": 59903,
+          "async": false,
+          "exportedName": "redirectToCheckout",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/search/page": {
+          "moduleId": 93140,
+          "async": false,
+          "exportedName": "redirectToCheckout",
+          "filename": "components/cart/actions.ts"
+        }
+      },
+      "layer": {
+        "app/[page]/page": "action-browser",
+        "app/_not-found/page": "action-browser",
+        "app/account/page": "action-browser",
+        "app/checkout/page": "action-browser",
+        "app/orders/page": "action-browser",
+        "app/page": "action-browser",
+        "app/product/[handle]/page": "action-browser",
+        "app/search/[collection]/[[...subcategory]]/page": "action-browser",
+        "app/search/page": "action-browser"
+      },
+      "filename": "components/cart/actions.ts",
+      "exportedName": "redirectToCheckout"
+    },
+    "6034ca61ccef63a4ac6a9cb52b6f1fe6faba7f2381": {
+      "workers": {
+        "app/[page]/page": {
+          "moduleId": 59547,
+          "async": false,
+          "exportedName": "removeItem",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": 41829,
+          "async": false,
+          "exportedName": "removeItem",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/account/page": {
+          "moduleId": 17715,
+          "async": false,
+          "exportedName": "removeItem",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/checkout/page": {
+          "moduleId": 77473,
+          "async": false,
+          "exportedName": "removeItem",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/orders/page": {
+          "moduleId": 83710,
+          "async": false,
+          "exportedName": "removeItem",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/page": {
+          "moduleId": 92195,
+          "async": false,
+          "exportedName": "removeItem",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/product/[handle]/page": {
+          "moduleId": 90335,
+          "async": false,
+          "exportedName": "removeItem",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/search/[collection]/[[...subcategory]]/page": {
+          "moduleId": 59903,
+          "async": false,
+          "exportedName": "removeItem",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/search/page": {
+          "moduleId": 93140,
+          "async": false,
+          "exportedName": "removeItem",
+          "filename": "components/cart/actions.ts"
+        }
+      },
+      "layer": {
+        "app/[page]/page": "action-browser",
+        "app/_not-found/page": "action-browser",
+        "app/account/page": "action-browser",
+        "app/checkout/page": "action-browser",
+        "app/orders/page": "action-browser",
+        "app/page": "action-browser",
+        "app/product/[handle]/page": "action-browser",
+        "app/search/[collection]/[[...subcategory]]/page": "action-browser",
+        "app/search/page": "action-browser"
+      },
+      "filename": "components/cart/actions.ts",
+      "exportedName": "removeItem"
+    },
+    "603b506a1e266f34072a78052691ce64cc986dbcb7": {
+      "workers": {
+        "app/[page]/page": {
+          "moduleId": 59547,
+          "async": false,
+          "exportedName": "updateItemQuantity",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": 41829,
+          "async": false,
+          "exportedName": "updateItemQuantity",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/account/page": {
+          "moduleId": 17715,
+          "async": false,
+          "exportedName": "updateItemQuantity",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/checkout/page": {
+          "moduleId": 77473,
+          "async": false,
+          "exportedName": "updateItemQuantity",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/orders/page": {
+          "moduleId": 83710,
+          "async": false,
+          "exportedName": "updateItemQuantity",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/page": {
+          "moduleId": 92195,
+          "async": false,
+          "exportedName": "updateItemQuantity",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/product/[handle]/page": {
+          "moduleId": 90335,
+          "async": false,
+          "exportedName": "updateItemQuantity",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/search/[collection]/[[...subcategory]]/page": {
+          "moduleId": 59903,
+          "async": false,
+          "exportedName": "updateItemQuantity",
+          "filename": "components/cart/actions.ts"
+        },
+        "app/search/page": {
+          "moduleId": 93140,
+          "async": false,
+          "exportedName": "updateItemQuantity",
+          "filename": "components/cart/actions.ts"
+        }
+      },
+      "layer": {
+        "app/[page]/page": "action-browser",
+        "app/_not-found/page": "action-browser",
+        "app/account/page": "action-browser",
+        "app/checkout/page": "action-browser",
+        "app/orders/page": "action-browser",
+        "app/page": "action-browser",
+        "app/product/[handle]/page": "action-browser",
+        "app/search/[collection]/[[...subcategory]]/page": "action-browser",
+        "app/search/page": "action-browser"
+      },
+      "filename": "components/cart/actions.ts",
+      "exportedName": "updateItemQuantity"
+    },
+    "804b72435cd58c829a9f44b254ec9fc1108fbfc416": {
+      "workers": {
+        "app/[page]/page": {
+          "moduleId": 59547,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_2",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": 41829,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_2",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/account/page": {
+          "moduleId": 17715,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_2",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/checkout/page": {
+          "moduleId": 77473,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_2",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/orders/page": {
+          "moduleId": 83710,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_2",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/page": {
+          "moduleId": 92195,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_2",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/product/[handle]/page": {
+          "moduleId": 90335,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_2",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/[collection]/[[...subcategory]]/page": {
+          "moduleId": 59903,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_2",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/page": {
+          "moduleId": 93140,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_2",
+          "filename": "lib/shopify/index.ts"
+        }
+      },
+      "layer": {
+        "app/[page]/page": "rsc",
+        "app/_not-found/page": "rsc",
+        "app/account/page": "rsc",
+        "app/checkout/page": "rsc",
+        "app/orders/page": "rsc",
+        "app/page": "rsc",
+        "app/product/[handle]/page": "rsc",
+        "app/search/[collection]/[[...subcategory]]/page": "rsc",
+        "app/search/page": "rsc"
+      },
+      "filename": "lib/shopify/index.ts",
+      "exportedName": "$$RSC_SERVER_CACHE_2"
+    },
+    "c0160ad0ee6e22f8851456ad426c023654212629c3": {
+      "workers": {
+        "app/[page]/page": {
+          "moduleId": 59547,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_5",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": 41829,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_5",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/account/page": {
+          "moduleId": 17715,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_5",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/checkout/page": {
+          "moduleId": 77473,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_5",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/orders/page": {
+          "moduleId": 83710,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_5",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/page": {
+          "moduleId": 92195,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_5",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/product/[handle]/page": {
+          "moduleId": 90335,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_5",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/[collection]/[[...subcategory]]/page": {
+          "moduleId": 59903,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_5",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/page": {
+          "moduleId": 93140,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_5",
+          "filename": "lib/shopify/index.ts"
+        }
+      },
+      "layer": {
+        "app/[page]/page": "rsc",
+        "app/_not-found/page": "rsc",
+        "app/account/page": "rsc",
+        "app/checkout/page": "rsc",
+        "app/orders/page": "rsc",
+        "app/page": "rsc",
+        "app/product/[handle]/page": "rsc",
+        "app/search/[collection]/[[...subcategory]]/page": "rsc",
+        "app/search/page": "rsc"
+      },
+      "filename": "lib/shopify/index.ts",
+      "exportedName": "$$RSC_SERVER_CACHE_5"
+    },
+    "c02aa9004cde06a080ddc597e8661bec1b8efa28b6": {
+      "workers": {
+        "app/[page]/page": {
+          "moduleId": 59547,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_7",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": 41829,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_7",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/account/page": {
+          "moduleId": 17715,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_7",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/checkout/page": {
+          "moduleId": 77473,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_7",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/orders/page": {
+          "moduleId": 83710,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_7",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/page": {
+          "moduleId": 92195,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_7",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/product/[handle]/page": {
+          "moduleId": 90335,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_7",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/[collection]/[[...subcategory]]/page": {
+          "moduleId": 59903,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_7",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/page": {
+          "moduleId": 93140,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_7",
+          "filename": "lib/shopify/index.ts"
+        }
+      },
+      "layer": {
+        "app/[page]/page": "rsc",
+        "app/_not-found/page": "rsc",
+        "app/account/page": "rsc",
+        "app/checkout/page": "rsc",
+        "app/orders/page": "rsc",
+        "app/page": "rsc",
+        "app/product/[handle]/page": "rsc",
+        "app/search/[collection]/[[...subcategory]]/page": "rsc",
+        "app/search/page": "rsc"
+      },
+      "filename": "lib/shopify/index.ts",
+      "exportedName": "$$RSC_SERVER_CACHE_7"
+    },
+    "c037c3d99798e786f2c5d27f1c8757afd1cf8d3be1": {
+      "workers": {
+        "app/[page]/page": {
+          "moduleId": 59547,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_1",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": 41829,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_1",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/account/page": {
+          "moduleId": 17715,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_1",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/checkout/page": {
+          "moduleId": 77473,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_1",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/orders/page": {
+          "moduleId": 83710,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_1",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/page": {
+          "moduleId": 92195,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_1",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/product/[handle]/page": {
+          "moduleId": 90335,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_1",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/[collection]/[[...subcategory]]/page": {
+          "moduleId": 59903,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_1",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/page": {
+          "moduleId": 93140,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_1",
+          "filename": "lib/shopify/index.ts"
+        }
+      },
+      "layer": {
+        "app/[page]/page": "rsc",
+        "app/_not-found/page": "rsc",
+        "app/account/page": "rsc",
+        "app/checkout/page": "rsc",
+        "app/orders/page": "rsc",
+        "app/page": "rsc",
+        "app/product/[handle]/page": "rsc",
+        "app/search/[collection]/[[...subcategory]]/page": "rsc",
+        "app/search/page": "rsc"
+      },
+      "filename": "lib/shopify/index.ts",
+      "exportedName": "$$RSC_SERVER_CACHE_1"
+    },
+    "c05ebbeb134999e6bb796042717286773b6e4bf09b": {
+      "workers": {
+        "app/[page]/page": {
+          "moduleId": 59547,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_6",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": 41829,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_6",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/account/page": {
+          "moduleId": 17715,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_6",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/checkout/page": {
+          "moduleId": 77473,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_6",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/orders/page": {
+          "moduleId": 83710,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_6",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/page": {
+          "moduleId": 92195,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_6",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/product/[handle]/page": {
+          "moduleId": 90335,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_6",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/[collection]/[[...subcategory]]/page": {
+          "moduleId": 59903,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_6",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/page": {
+          "moduleId": 93140,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_6",
+          "filename": "lib/shopify/index.ts"
+        }
+      },
+      "layer": {
+        "app/[page]/page": "rsc",
+        "app/_not-found/page": "rsc",
+        "app/account/page": "rsc",
+        "app/checkout/page": "rsc",
+        "app/orders/page": "rsc",
+        "app/page": "rsc",
+        "app/product/[handle]/page": "rsc",
+        "app/search/[collection]/[[...subcategory]]/page": "rsc",
+        "app/search/page": "rsc"
+      },
+      "filename": "lib/shopify/index.ts",
+      "exportedName": "$$RSC_SERVER_CACHE_6"
+    },
+    "c09f87d47552af9d9b112f53723a98611d4ea05c69": {
+      "workers": {
+        "app/[page]/page": {
+          "moduleId": 59547,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_0",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": 41829,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_0",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/account/page": {
+          "moduleId": 17715,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_0",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/checkout/page": {
+          "moduleId": 77473,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_0",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/orders/page": {
+          "moduleId": 83710,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_0",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/page": {
+          "moduleId": 92195,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_0",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/product/[handle]/page": {
+          "moduleId": 90335,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_0",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/[collection]/[[...subcategory]]/page": {
+          "moduleId": 59903,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_0",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/page": {
+          "moduleId": 93140,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_0",
+          "filename": "lib/shopify/index.ts"
+        }
+      },
+      "layer": {
+        "app/[page]/page": "rsc",
+        "app/_not-found/page": "rsc",
+        "app/account/page": "rsc",
+        "app/checkout/page": "rsc",
+        "app/orders/page": "rsc",
+        "app/page": "rsc",
+        "app/product/[handle]/page": "rsc",
+        "app/search/[collection]/[[...subcategory]]/page": "rsc",
+        "app/search/page": "rsc"
+      },
+      "filename": "lib/shopify/index.ts",
+      "exportedName": "$$RSC_SERVER_CACHE_0"
+    },
+    "c0c984063d36ad2fae2782825a31b85298c7402656": {
+      "workers": {
+        "app/[page]/page": {
+          "moduleId": 59547,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_3",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": 41829,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_3",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/account/page": {
+          "moduleId": 17715,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_3",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/checkout/page": {
+          "moduleId": 77473,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_3",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/orders/page": {
+          "moduleId": 83710,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_3",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/page": {
+          "moduleId": 92195,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_3",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/product/[handle]/page": {
+          "moduleId": 90335,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_3",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/[collection]/[[...subcategory]]/page": {
+          "moduleId": 59903,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_3",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/page": {
+          "moduleId": 93140,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_3",
+          "filename": "lib/shopify/index.ts"
+        }
+      },
+      "layer": {
+        "app/[page]/page": "rsc",
+        "app/_not-found/page": "rsc",
+        "app/account/page": "rsc",
+        "app/checkout/page": "rsc",
+        "app/orders/page": "rsc",
+        "app/page": "rsc",
+        "app/product/[handle]/page": "rsc",
+        "app/search/[collection]/[[...subcategory]]/page": "rsc",
+        "app/search/page": "rsc"
+      },
+      "filename": "lib/shopify/index.ts",
+      "exportedName": "$$RSC_SERVER_CACHE_3"
+    },
+    "c0e2f641d1cf6974a26c8c2985a03a37151e0f9fa1": {
+      "workers": {
+        "app/[page]/page": {
+          "moduleId": 59547,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_4",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/_not-found/page": {
+          "moduleId": 41829,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_4",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/account/page": {
+          "moduleId": 17715,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_4",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/checkout/page": {
+          "moduleId": 77473,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_4",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/orders/page": {
+          "moduleId": 83710,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_4",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/page": {
+          "moduleId": 92195,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_4",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/product/[handle]/page": {
+          "moduleId": 90335,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_4",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/[collection]/[[...subcategory]]/page": {
+          "moduleId": 59903,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_4",
+          "filename": "lib/shopify/index.ts"
+        },
+        "app/search/page": {
+          "moduleId": 93140,
+          "async": false,
+          "exportedName": "$$RSC_SERVER_CACHE_4",
+          "filename": "lib/shopify/index.ts"
+        }
+      },
+      "layer": {
+        "app/[page]/page": "rsc",
+        "app/_not-found/page": "rsc",
+        "app/account/page": "rsc",
+        "app/checkout/page": "rsc",
+        "app/orders/page": "rsc",
+        "app/page": "rsc",
+        "app/product/[handle]/page": "rsc",
+        "app/search/[collection]/[[...subcategory]]/page": "rsc",
+        "app/search/page": "rsc"
+      },
+      "filename": "lib/shopify/index.ts",
+      "exportedName": "$$RSC_SERVER_CACHE_4"
+    },
+    "600cce64c753d579b67e3785ef8089ac54f88fde39": {
+      "workers": {
+        "app/product/[handle]/page": {
+          "moduleId": 90335,
+          "async": false,
+          "exportedName": "addItem",
+          "filename": "components/cart/actions.ts"
+        }
+      },
+      "layer": {
+        "app/product/[handle]/page": "action-browser"
+      },
+      "filename": "components/cart/actions.ts",
+      "exportedName": "addItem"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "lBYheWsfMzY6ZYb2M9YhDDYNC+BFhtHfVXSqHu2xGkM="
+}

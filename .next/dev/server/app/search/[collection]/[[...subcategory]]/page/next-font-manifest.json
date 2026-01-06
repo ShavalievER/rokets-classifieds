@@ -1,0 +1,10 @@
+{
+  "pages": {},
+  "app": {
+    "[project]/app/search/[collection]/[[...subcategory]]/page": [
+      "static/media/Geist_Variable-s.p.70416cc0.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pagesUsingSizeAdjust": false
+}

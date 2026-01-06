@@ -1,0 +1,3 @@
+{
+  "/search/[collection]/[[...subcategory]]/page": "app/search/[collection]/[[...subcategory]]/page.js"
+}
