@@ -42,13 +42,64 @@ app.prepare().then(() => {
     const url = req.url;
     console.log(`[${new Date().toISOString()}] ${req.method} ${url}`);
     
-    // Handle request with error catching
+    // Handle request with comprehensive error catching
     try {
-      handle(req, res);
+      const handlePromise = handle(req, res);
+      
+      // Handle promise errors
+      if (handlePromise && typeof handlePromise.catch === 'function') {
+        handlePromise.catch((error) => {
+          console.error('Error in Next.js handler promise:', error);
+          console.error('Stack:', error.stack);
+          
+          if (!res.headersSent) {
+            res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.end(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Server Error</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+    h1 { color: #f44336; }
+    pre { background: #2a2a2a; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 11px; }
+  </style>
+</head>
+<body>
+  <h1>❌ Server Error</h1>
+  <p><strong>Error:</strong> ${error.message}</p>
+  <pre>${error.stack}</pre>
+</body>
+</html>
+            `);
+          }
+        });
+      }
     } catch (error) {
-      console.error('Error handling request:', error);
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end('Internal Server Error');
+      console.error('Error in request handler (sync):', error);
+      console.error('Stack:', error.stack);
+      
+      if (!res.headersSent) {
+        res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Server Error</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+    h1 { color: #f44336; }
+    pre { background: #2a2a2a; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 11px; }
+  </style>
+</head>
+<body>
+  <h1>❌ Server Error (Sync)</h1>
+  <p><strong>Error:</strong> ${error.message}</p>
+  <pre>${error.stack}</pre>
+</body>
+</html>
+        `);
+      }
     }
   }).listen(port, '0.0.0.0', (err) => {
     if (err) {
@@ -84,5 +135,17 @@ app.prepare().then(() => {
   }
   
   process.exit(1);
+});
+
+// Catch all unhandled errors
+process.on('uncaughtException', (err) => {
+  console.error('❌ UNCAUGHT EXCEPTION:', err);
+  console.error('Stack:', err.stack);
+  // Don't exit immediately - let server try to handle
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ UNHANDLED REJECTION:', reason);
+  console.error('Promise:', promise);
 });
 
