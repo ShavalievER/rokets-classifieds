@@ -11,6 +11,9 @@ console.log('Node.js version:', process.version);
 console.log('Port:', port);
 console.log('Base path:', basePath || '(none)');
 
+// Configuration
+const USE_NEXTJS_HANDLER = false; // Set to true to enable Next.js handler (may cause crashes)
+
 // Track state
 let serverState = {
   started: new Date().toISOString(),
@@ -84,10 +87,6 @@ const server = http.createServer((req, res) => {
     `;
     
     // Try to use Next.js handler with maximum error protection
-    // DISABLED for now - causes process crashes
-    // We'll enable it step by step to find the issue
-    const USE_NEXTJS_HANDLER = false; // Set to true to enable
-    
     if (USE_NEXTJS_HANDLER && serverState.prepareSuccess && serverState.nextApp && serverState.handle) {
       try {
         console.log('Attempting to use Next.js handler...');
