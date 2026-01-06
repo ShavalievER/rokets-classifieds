@@ -10,7 +10,7 @@
 .playwright
 
 # next.js
-# /.next/  # Temporarily uncommented to include build in git
+/.next/
 /out/
 
 # production
