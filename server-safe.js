@@ -12,7 +12,7 @@ console.log('Port:', port);
 console.log('Base path:', basePath || '(none)');
 
 // Configuration
-const USE_NEXTJS_HANDLER = false; // Set to true to enable Next.js handler (may cause crashes)
+const USE_NEXTJS_HANDLER = true; // Enable handler to see errors (with protection)
 
 // Track state
 let serverState = {
@@ -88,20 +88,54 @@ const server = http.createServer((req, res) => {
     
     // Try to use Next.js handler with maximum error protection
     if (USE_NEXTJS_HANDLER && serverState.prepareSuccess && serverState.nextApp && serverState.handle) {
-      try {
-        console.log('Attempting to use Next.js handler...');
-        const handlePromise = serverState.handle(req, res);
+      // Wrap handler call in domain to catch all errors
+      const domain = require('domain').create();
+      
+      domain.on('error', (err) => {
+        console.error('Domain error (handler):', err);
+        serverState.errors.push(`Domain error: ${err.message}`);
+        serverState.errors.push(`Domain error stack: ${err.stack}`);
         
-        // Catch promise errors
-        if (handlePromise && typeof handlePromise.catch === 'function') {
-          handlePromise.catch((err) => {
-            console.error('Next.js handler promise error:', err);
-            serverState.errors.push(`Handler promise error: ${err.message}`);
-            serverState.errors.push(`Handler promise stack: ${err.stack}`);
-            
-            if (!res.headersSent) {
-              res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
-              res.end(`
+        if (!res.headersSent) {
+          res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+          res.end(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Next.js Handler Domain Error</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+    h1 { color: #f44336; }
+    .error { color: #f44336; }
+    pre { background: #2a2a2a; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 11px; }
+  </style>
+</head>
+<body>
+  <h1>❌ Next.js Handler Domain Error</h1>
+  <p class="error"><strong>Error:</strong> ${err.message}</p>
+  <pre>${err.stack}</pre>
+  <p><a href="/" style="color: #4CAF50;">Back to diagnostics</a></p>
+</body>
+</html>
+          `);
+        }
+      });
+      
+      domain.run(() => {
+        try {
+          console.log('Attempting to use Next.js handler...');
+          const handlePromise = serverState.handle(req, res);
+          
+          // Catch promise errors
+          if (handlePromise && typeof handlePromise.catch === 'function') {
+            handlePromise.catch((err) => {
+              console.error('Next.js handler promise error:', err);
+              serverState.errors.push(`Handler promise error: ${err.message}`);
+              serverState.errors.push(`Handler promise stack: ${err.stack}`);
+              
+              if (!res.headersSent) {
+                res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+                res.end(`
 <!DOCTYPE html>
 <html>
 <head>
@@ -120,17 +154,23 @@ const server = http.createServer((req, res) => {
   <p><a href="/" style="color: #4CAF50;">Back to diagnostics</a></p>
 </body>
 </html>
-              `);
-            }
-          });
+                `);
+              }
+            });
+          }
+        } catch (err) {
+          console.error('Error calling handler:', err);
+          serverState.errors.push(`Handler sync error: ${err.message}`);
+          serverState.errors.push(`Handler sync stack: ${err.stack}`);
+          
+          if (!res.headersSent) {
+            res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.end(`Handler sync error: ${err.message}\n\n${err.stack}`);
+          }
         }
-        return; // Let Next.js try to handle
-      } catch (err) {
-        console.error('Error calling handler:', err);
-        serverState.errors.push(`Handler error: ${err.message}`);
-        serverState.errors.push(`Handler stack: ${err.stack}`);
-        // Fall through to show diagnostics
-      }
+      });
+      
+      return; // Let Next.js try to handle
     }
     
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
