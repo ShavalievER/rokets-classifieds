@@ -155,7 +155,7 @@ server.listen(port, '0.0.0.0', () => {
       
       serverState.nextApp = app;
       serverState.nextAppCreated = true;
-      serverState.handle = app.getRequestHandler();
+      // Don't get handler immediately - get it after prepare()
       console.log('✅ Next.js app created');
       
       // Prepare
@@ -167,6 +167,15 @@ server.listen(port, '0.0.0.0', () => {
           serverState.prepareCompleted = true;
           serverState.prepareSuccess = true;
           console.log('✅ Next.js app prepared successfully');
+          
+          // Get handler AFTER prepare() completes
+          try {
+            serverState.handle = app.getRequestHandler();
+            console.log('✅ Next.js handler obtained');
+          } catch (err) {
+            console.error('❌ Failed to get handler:', err);
+            serverState.errors.push(`Failed to get handler: ${err.message}`);
+          }
         })
         .catch((err) => {
           serverState.prepareCompleted = true;
