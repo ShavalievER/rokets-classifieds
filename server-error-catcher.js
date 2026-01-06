@@ -14,6 +14,15 @@ console.log('Current directory:', __dirname);
 
 let lastError = null;
 let errorCount = 0;
+let nextApp = null;
+let prepareStatus = {
+  started: false,
+  completed: false,
+  success: false,
+  error: null,
+  startTime: null,
+  endTime: null
+};
 
 // Catch all errors
 process.on('uncaughtException', (err) => {
@@ -113,25 +122,13 @@ const server = http.createServer((req, res) => {
     }
   })()}
   
-  ${(() => {
-    try {
-      const next = require('next');
-      const nextFunction = next.default || next;
-      const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
-      const app = nextFunction({
-        dev: false,
-        conf: {
-          basePath: basePath,
-          assetPrefix: basePath
-        }
-      });
-      
-      // Try prepare synchronously (this will fail, but we'll catch the error)
-      return '<p>Attempting prepare()...</p>';
-    } catch (e) {
-      return `<p class="error">Error in prepare attempt: ${e.message}</p>`;
-    }
-  })()}
+  <h2>Next.js prepare() Status:</h2>
+  ${prepareStatus.started ? `
+    <p>Status: ${prepareStatus.completed ? (prepareStatus.success ? '<span class="success">✅ SUCCESS</span>' : '<span class="error">❌ FAILED</span>') : '<span>⏳ IN PROGRESS...</span>'}</p>
+    ${prepareStatus.startTime ? `<p>Started: ${prepareStatus.startTime}</p>` : ''}
+    ${prepareStatus.endTime ? `<p>Completed: ${prepareStatus.endTime}</p>` : ''}
+    ${prepareStatus.error ? `<p class="error">Error: ${prepareStatus.error}</p>` : ''}
+  ` : '<p>Not started yet. Will start automatically...</p>'}
 </body>
 </html>
     `;
@@ -145,12 +142,77 @@ const server = http.createServer((req, res) => {
   }
 });
 
+// Try to prepare Next.js in background
+function tryPrepareNext() {
+  if (prepareStatus.started) {
+    return; // Already started
+  }
+  
+  try {
+    const next = require('next');
+    const nextFunction = next.default || next;
+    const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+    
+    if (typeof nextFunction !== 'function') {
+      prepareStatus.error = 'Next.js export is not a function';
+      prepareStatus.completed = true;
+      return;
+    }
+    
+    nextApp = nextFunction({
+      dev: false,
+      conf: {
+        basePath: basePath,
+        assetPrefix: basePath
+      }
+    });
+    
+    prepareStatus.started = true;
+    prepareStatus.startTime = new Date().toISOString();
+    console.log('Starting Next.js prepare()...');
+    
+    nextApp.prepare()
+      .then(() => {
+        prepareStatus.completed = true;
+        prepareStatus.success = true;
+        prepareStatus.endTime = new Date().toISOString();
+        console.log('✅ Next.js prepare() completed successfully');
+      })
+      .catch((err) => {
+        prepareStatus.completed = true;
+        prepareStatus.success = false;
+        prepareStatus.error = err.message;
+        prepareStatus.endTime = new Date().toISOString();
+        console.error('❌ Next.js prepare() failed:', err.message);
+        console.error('Stack:', err.stack);
+        lastError = {
+          type: 'prepareError',
+          message: err.message,
+          stack: err.stack,
+          timestamp: new Date().toISOString()
+        };
+      });
+  } catch (e) {
+    prepareStatus.started = true;
+    prepareStatus.completed = true;
+    prepareStatus.success = false;
+    prepareStatus.error = e.message;
+    prepareStatus.endTime = new Date().toISOString();
+    console.error('❌ Failed to start prepare():', e.message);
+  }
+}
+
 server.listen(port, '0.0.0.0', () => {
   console.log('='.repeat(50));
   console.log('✅ ERROR CATCHER SERVER RUNNING');
   console.log(`   Port: ${port}`);
   console.log(`   URL: http://0.0.0.0:${port}`);
   console.log('='.repeat(50));
+  
+  // Start prepare() in background
+  setTimeout(() => {
+    tryPrepareNext();
+  }, 1000);
 });
 
 server.on('error', (err) => {
