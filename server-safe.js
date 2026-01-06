@@ -1,5 +1,7 @@
 // Safe server that starts BEFORE loading Next.js
 const http = require('http');
+const os = require('os');
+const v8 = require('v8');
 
 const port = process.env.PORT || 3001;
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
@@ -11,8 +13,41 @@ console.log('Node.js version:', process.version);
 console.log('Port:', port);
 console.log('Base path:', basePath || '(none)');
 
+// System diagnostics
+const systemInfo = {
+  nodeVersion: process.version,
+  platform: process.platform,
+  arch: process.arch,
+  pid: process.pid,
+  uptime: process.uptime(),
+  memory: {
+    rss: Math.round(process.memoryUsage().rss / 1024 / 1024) + ' MB',
+    heapTotal: Math.round(process.memoryUsage().heapTotal / 1024 / 1024) + ' MB',
+    heapUsed: Math.round(process.memoryUsage().heapUsed / 1024 / 1024) + ' MB',
+    external: Math.round(process.memoryUsage().external / 1024 / 1024) + ' MB'
+  },
+  v8Heap: {
+    total: Math.round(v8.getHeapStatistics().total_heap_size / 1024 / 1024) + ' MB',
+    used: Math.round(v8.getHeapStatistics().used_heap_size / 1024 / 1024) + ' MB',
+    available: Math.round(v8.getHeapStatistics().total_available_size / 1024 / 1024) + ' MB',
+    limit: Math.round(v8.getHeapStatistics().heap_size_limit / 1024 / 1024) + ' MB'
+  },
+  os: {
+    totalmem: Math.round(os.totalmem() / 1024 / 1024) + ' MB',
+    freemem: Math.round(os.freemem() / 1024 / 1024) + ' MB',
+    cpus: os.cpus().length
+  },
+  env: {
+    NODE_ENV: process.env.NODE_ENV || 'not set',
+    PORT: port,
+    NEXT_PUBLIC_BASE_PATH: basePath || 'not set'
+  }
+};
+
+console.log('System Info:', JSON.stringify(systemInfo, null, 2));
+
 // Configuration
-const USE_NEXTJS_HANDLER = false; // Disabled - causes process crashes (with protection)
+const USE_NEXTJS_HANDLER = true; // Enable with monitoring (with protection)
 
 // Track state
 let serverState = {
@@ -22,8 +57,43 @@ let serverState = {
   prepareStarted: false,
   prepareCompleted: false,
   prepareSuccess: false,
-  errors: []
+  errors: [],
+  memorySnapshots: [],
+  requestCount: 0,
+  handlerAttempts: 0,
+  handlerCrashes: 0
 };
+
+// Memory monitoring
+function takeMemorySnapshot(label) {
+  const mem = process.memoryUsage();
+  const v8Heap = v8.getHeapStatistics();
+  const snapshot = {
+    label,
+    timestamp: new Date().toISOString(),
+    memory: {
+      rss: Math.round(mem.rss / 1024 / 1024) + ' MB',
+      heapTotal: Math.round(mem.heapTotal / 1024 / 1024) + ' MB',
+      heapUsed: Math.round(mem.heapUsed / 1024 / 1024) + ' MB',
+      external: Math.round(mem.external / 1024 / 1024) + ' MB'
+    },
+    v8Heap: {
+      total: Math.round(v8Heap.total_heap_size / 1024 / 1024) + ' MB',
+      used: Math.round(v8Heap.used_heap_size / 1024 / 1024) + ' MB',
+      limit: Math.round(v8Heap.heap_size_limit / 1024 / 1024) + ' MB'
+    }
+  };
+  serverState.memorySnapshots.push(snapshot);
+  // Keep only last 20 snapshots
+  if (serverState.memorySnapshots.length > 20) {
+    serverState.memorySnapshots = serverState.memorySnapshots.slice(-20);
+  }
+  console.log(`Memory snapshot [${label}]:`, JSON.stringify(snapshot, null, 2));
+  return snapshot;
+}
+
+// Take initial snapshot
+takeMemorySnapshot('Server Start');
 
 // Create HTTP server FIRST (before loading Next.js)
 const server = http.createServer((req, res) => {
@@ -52,6 +122,9 @@ const server = http.createServer((req, res) => {
     <h2>Server State:</h2>
     <ul>
       <li>Started: ${serverState.started}</li>
+      <li>Requests: ${serverState.requestCount}</li>
+      <li>Handler Attempts: ${serverState.handlerAttempts}</li>
+      <li>Handler Crashes: ${serverState.handlerCrashes}</li>
       <li>Next.js Loaded: ${serverState.nextJsLoaded ? '✅' : '❌'}</li>
       <li>Next.js App Created: ${serverState.nextAppCreated ? '✅' : '❌'}</li>
       <li>Prepare Started: ${serverState.prepareStarted ? '✅' : '❌'}</li>
@@ -59,6 +132,23 @@ const server = http.createServer((req, res) => {
       <li>Prepare Success: ${serverState.prepareSuccess ? '✅' : '❌'}</li>
     </ul>
   </div>
+  
+  <div class="section">
+    <h2>System Information:</h2>
+    <pre>${JSON.stringify(systemInfo, null, 2)}</pre>
+  </div>
+  
+  <div class="section">
+    <h2>Current Memory Usage:</h2>
+    <pre>${JSON.stringify(takeMemorySnapshot('Current'), null, 2)}</pre>
+  </div>
+  
+  ${serverState.memorySnapshots.length > 0 ? `
+    <div class="section">
+      <h2>Memory Snapshots (last ${Math.min(10, serverState.memorySnapshots.length)}):</h2>
+      <pre>${JSON.stringify(serverState.memorySnapshots.slice(-10), null, 2)}</pre>
+    </div>
+  ` : ''}
   
   ${serverState.errors.length > 0 ? `
     <div class="section">
@@ -94,18 +184,76 @@ const server = http.createServer((req, res) => {
 </html>
     `;
     
-    // Handler is disabled - it causes process crashes that can't be caught
-    // Even with domain, setTimeout, and all error handling, the process dies
-    // This suggests a system-level issue (memory limits, or Next.js internals)
-    
+    // Try handler with comprehensive monitoring
     if (USE_NEXTJS_HANDLER && serverState.prepareSuccess && serverState.nextApp && serverState.handle) {
-      serverState.errors.push('Handler is disabled - causes process crashes. prepare() works, but handler causes Internal Server Error.');
+      serverState.handlerAttempts++;
+      console.log(`[Request #${requestId}] Attempting to use handler (attempt #${serverState.handlerAttempts})...`);
+      
+      takeMemorySnapshot(`Before Handler Call #${serverState.handlerAttempts}`);
+      
+      try {
+        // Try to call handler with timeout
+        const handlerTimeout = setTimeout(() => {
+          console.error(`[Request #${requestId}] Handler timeout after 5 seconds`);
+          serverState.errors.push(`Handler timeout on request #${requestId}`);
+          if (!res.headersSent) {
+            res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.end('Handler timeout');
+          }
+        }, 5000);
+        
+        const handlePromise = serverState.handle(req, res);
+        
+        if (handlePromise && typeof handlePromise.catch === 'function') {
+          handlePromise
+            .then(() => {
+              clearTimeout(handlerTimeout);
+              takeMemorySnapshot(`After Handler Success #${serverState.handlerAttempts}`);
+              console.log(`[Request #${requestId}] Handler completed successfully`);
+            })
+            .catch((err) => {
+              clearTimeout(handlerTimeout);
+              takeMemorySnapshot(`After Handler Error #${serverState.handlerAttempts}`);
+              console.error(`[Request #${requestId}] Handler promise error:`, err);
+              serverState.errors.push(`Handler error on request #${requestId}: ${err.message}`);
+              
+              if (!res.headersSent) {
+                res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+                res.end(`Handler error: ${err.message}\n\n${err.stack}`);
+              }
+            });
+        } else {
+          clearTimeout(handlerTimeout);
+          takeMemorySnapshot(`After Handler Sync #${serverState.handlerAttempts}`);
+        }
+        
+        return; // Let Next.js handle
+      } catch (err) {
+        serverState.handlerCrashes++;
+        takeMemorySnapshot(`After Handler Crash #${serverState.handlerAttempts}`);
+        console.error(`[Request #${requestId}] Handler sync error:`, err);
+        serverState.errors.push(`Handler crash on request #${requestId}: ${err.message}`);
+        serverState.errors.push(`Handler crash stack: ${err.stack}`);
+        
+        if (!res.headersSent) {
+          res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+          res.end(`Handler crash: ${err.message}\n\n${err.stack}`);
+        }
+        return;
+      }
     }
+    
+    const requestDuration = Date.now() - requestStart;
+    takeMemorySnapshot(`Request #${requestId} End (${requestDuration}ms)`);
+    console.log(`[Request #${requestId}] Completed in ${requestDuration}ms`);
     
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
     res.end(html);
   } catch (err) {
-    console.error('Error in request handler:', err);
+    const requestDuration = Date.now() - requestStart;
+    takeMemorySnapshot(`Request #${requestId} Error (${requestDuration}ms)`);
+    console.error(`[Request #${requestId}] Error in request handler:`, err);
+    console.error('Stack:', err.stack);
     res.writeHead(500, { 'Content-Type': 'text/plain' });
     res.end(`Error: ${err.message}\n\nStack: ${err.stack}`);
   }
@@ -123,8 +271,10 @@ server.listen(port, '0.0.0.0', () => {
   setTimeout(() => {
     try {
       console.log('Attempting to load Next.js...');
+      takeMemorySnapshot('Before Next.js Load');
       const next = require('next');
       serverState.nextJsLoaded = true;
+      takeMemorySnapshot('After Next.js Load');
       console.log('✅ Next.js module loaded');
       
       const nextFunction = next.default || next;
@@ -136,35 +286,43 @@ server.listen(port, '0.0.0.0', () => {
         }
       });
       
+      takeMemorySnapshot('Before App Creation');
       serverState.nextApp = app;
       serverState.nextAppCreated = true;
-      // Don't get handler immediately - get it after prepare()
+      takeMemorySnapshot('After App Creation');
       console.log('✅ Next.js app created');
       
       // Prepare
       serverState.prepareStarted = true;
+      takeMemorySnapshot('Before Prepare');
       console.log('Preparing Next.js app...');
       
       app.prepare()
         .then(() => {
+          takeMemorySnapshot('After Prepare Success');
           serverState.prepareCompleted = true;
           serverState.prepareSuccess = true;
           console.log('✅ Next.js app prepared successfully');
           
           // Get handler AFTER prepare() completes
           try {
+            takeMemorySnapshot('Before Get Handler');
             serverState.handle = app.getRequestHandler();
+            takeMemorySnapshot('After Get Handler');
             console.log('✅ Next.js handler obtained');
           } catch (err) {
             console.error('❌ Failed to get handler:', err);
             serverState.errors.push(`Failed to get handler: ${err.message}`);
+            takeMemorySnapshot('After Get Handler Error');
           }
         })
         .catch((err) => {
+          takeMemorySnapshot('After Prepare Error');
           serverState.prepareCompleted = true;
           serverState.prepareSuccess = false;
           serverState.errors.push(`Prepare failed: ${err.message}`);
           console.error('❌ Next.js prepare failed:', err.message);
+          console.error('Stack:', err.stack);
         });
     } catch (err) {
       serverState.errors.push(`Load error: ${err.message}`);
