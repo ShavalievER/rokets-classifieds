@@ -173,22 +173,31 @@ const server = http.createServer((req, res) => {
   <div class="section">
     <h2>Current Memory Usage:</h2>
     <pre>${JSON.stringify((() => {
-      const mem = process.memoryUsage();
-      const v8Heap = v8.getHeapStatistics();
-      return {
-        timestamp: new Date().toISOString(),
-        memory: {
-          rss: Math.round(mem.rss / 1024 / 1024) + ' MB',
-          heapTotal: Math.round(mem.heapTotal / 1024 / 1024) + ' MB',
-          heapUsed: Math.round(mem.heapUsed / 1024 / 1024) + ' MB',
-          external: Math.round(mem.external / 1024 / 1024) + ' MB'
-        },
-        v8Heap: {
-          total: Math.round(v8Heap.total_heap_size / 1024 / 1024) + ' MB',
-          used: Math.round(v8Heap.used_heap_size / 1024 / 1024) + ' MB',
-          limit: Math.round(v8Heap.heap_size_limit / 1024 / 1024) + ' MB'
+      try {
+        const mem = process.memoryUsage();
+        let v8Heap = null;
+        try {
+          v8Heap = v8.getHeapStatistics();
+        } catch (e) {
+          v8Heap = { error: e.message };
         }
-      };
+        return {
+          timestamp: new Date().toISOString(),
+          memory: {
+            rss: Math.round(mem.rss / 1024 / 1024) + ' MB',
+            heapTotal: Math.round(mem.heapTotal / 1024 / 1024) + ' MB',
+            heapUsed: Math.round(mem.heapUsed / 1024 / 1024) + ' MB',
+            external: Math.round(mem.external / 1024 / 1024) + ' MB'
+          },
+          v8Heap: v8Heap && !v8Heap.error ? {
+            total: Math.round(v8Heap.total_heap_size / 1024 / 1024) + ' MB',
+            used: Math.round(v8Heap.used_heap_size / 1024 / 1024) + ' MB',
+            limit: Math.round(v8Heap.heap_size_limit / 1024 / 1024) + ' MB'
+          } : { error: v8Heap?.error || 'v8.getHeapStatistics() failed' }
+        };
+      } catch (e) {
+        return { error: 'Failed to get memory info: ' + e.message };
+      }
     })(), null, 2)}</pre>
   </div>
   
