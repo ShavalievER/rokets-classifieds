@@ -116,19 +116,6 @@ if (nextModule) {
     diagnostics.nextApp = {
       created: true
     };
-    
-    // Try to prepare (async, but we'll catch errors)
-    nextApp.prepare()
-      .then(() => {
-        diagnostics.nextApp.prepared = true;
-        diagnostics.nextApp.status = 'ready';
-      })
-      .catch((err) => {
-        diagnostics.nextApp.prepared = false;
-        diagnostics.nextApp.error = err.message;
-        diagnostics.nextApp.stack = err.stack;
-        diagnostics.errors.push(`Next.js prepare failed: ${err.message}`);
-      });
   } catch (e) {
     nextInitError = e;
     diagnostics.nextApp = {
@@ -141,6 +128,7 @@ if (nextModule) {
 }
 
 // Create HTTP server that shows diagnostics
+let serverReady = false;
 const server = createServer((req, res) => {
   // Update diagnostics timestamp
   diagnostics.timestamp = new Date().toISOString();
@@ -257,13 +245,45 @@ const server = createServer((req, res) => {
   res.end(html);
 });
 
-server.listen(port, '0.0.0.0', () => {
-  console.log('='.repeat(50));
-  console.log('✅ DIAGNOSTIC SERVER RUNNING');
-  console.log(`   Port: ${port}`);
-  console.log(`   URL: http://0.0.0.0:${port}`);
-  console.log('   Open in browser to see diagnostics');
-  console.log('='.repeat(50));
+// Start server and prepare Next.js
+async function startServer() {
+  // If Next.js app was created, prepare it first
+  if (nextApp) {
+    try {
+      console.log('Preparing Next.js app...');
+      await nextApp.prepare();
+      diagnostics.nextApp.prepared = true;
+      diagnostics.nextApp.status = 'ready';
+      console.log('✅ Next.js app prepared successfully');
+    } catch (err) {
+      diagnostics.nextApp.prepared = false;
+      diagnostics.nextApp.error = err.message;
+      diagnostics.nextApp.stack = err.stack;
+      diagnostics.errors.push(`Next.js prepare failed: ${err.message}`);
+      console.error('❌ Failed to prepare Next.js app:', err.message);
+    }
+  }
+  
+  // Start HTTP server
+  server.listen(port, '0.0.0.0', () => {
+    serverReady = true;
+    console.log('='.repeat(50));
+    console.log('✅ DIAGNOSTIC SERVER RUNNING');
+    console.log(`   Port: ${port}`);
+    console.log(`   URL: http://0.0.0.0:${port}`);
+    if (nextApp && diagnostics.nextApp && diagnostics.nextApp.prepared) {
+      console.log('   Next.js is ready - serving actual site');
+    } else {
+      console.log('   Showing diagnostics page');
+    }
+    console.log('='.repeat(50));
+  });
+}
+
+// Start the server
+startServer().catch((err) => {
+  console.error('❌ Failed to start server:', err);
+  process.exit(1);
 });
 
 server.on('error', (err) => {
