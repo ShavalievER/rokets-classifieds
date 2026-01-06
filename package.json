@@ -7,7 +7,9 @@
   "scripts": {
     "preinstall": "npm config set legacy-peer-deps true || true",
     "dev": "next dev --turbopack",
-    "build": "NODE_OPTIONS='--max-old-space-size=2048' next build",
+    "build": "next build",
+    "build:verpex": "NODE_OPTIONS=--max-old-space-size=2048 next build",
+    "build:skip": "echo 'Skipping build - using pre-built .next folder'",
     "start": "next start",
     "serve": "node server.js",
     "prettier": "prettier --write --ignore-unknown .",
@@ -33,6 +35,7 @@
     "@types/react": "19.0.12",
     "@types/react-dom": "19.0.4",
     "baseline-browser-mapping": "^2.9.11",
+    "cross-env": "^7.0.3",
     "postcss": "^8.5.3",
     "prettier": "3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",

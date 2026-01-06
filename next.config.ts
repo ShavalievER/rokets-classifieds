@@ -8,9 +8,8 @@ export default {
     // ppr: true,
     inlineCss: true,
     // useCache: true,
+    cacheComponents: true, // Required for 'use cache' directive
   },
-  // Reduce memory usage during build
-  swcMinify: true,
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
   },

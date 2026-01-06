@@ -6,11 +6,12 @@ import { CATEGORY_STRUCTURE } from './categories';
  * Generated products: 10 per subcategory
  */
 
-const LOCATIONS = ['Dubai', 'Sharjah', 'Abu Dhabi', 'Ajman', 'RAK'] as const;
+const LOCATIONS = ['Dubai', 'Sharjah', 'Abu Dhabi', 'Ajman', 'RAK'];
 
 // Helper function to get random location
 function getRandomLocation(): string {
-  return LOCATIONS[Math.floor(Math.random() * LOCATIONS.length)];
+  const index = Math.floor(Math.random() * LOCATIONS.length);
+  return LOCATIONS[index] || 'Dubai'; // Fallback to 'Dubai' if undefined
 }
 
 // Helper function to get random price in range
@@ -114,6 +115,7 @@ const createProduct = (
       description
     },
     tags: [category, subcategory, sellerLocation].filter(Boolean),
+    updatedAt: new Date().toISOString(),
     metafields: [
       {
         id: `${productId}-category`,
@@ -625,12 +627,6 @@ const PRODUCT_TEMPLATES: Record<string, {
     priceRange: [50, 400],
     imageBase: 'shoes'
   },
-  'accessories': {
-    titles: ['Handbag', 'Backpack', 'Wallet', 'Belt', 'Scarf', 'Hat', 'Sunglasses', 'Watch', 'Jewelry', 'Accessories Set'],
-    descriptions: ['Designer handbag', 'Backpack', 'Leather wallet', 'Leather belt', 'Scarf', 'Hat', 'Sunglasses', 'Watch', 'Jewelry', 'Accessories set'],
-    priceRange: [25, 300],
-    imageBase: 'accessories'
-  },
   'bags-luggage': {
     titles: ['Travel Suitcase', 'Carry-On Bag', 'Backpack', 'Duffel Bag', 'Tote Bag', 'Messenger Bag', 'Laptop Bag', 'Gym Bag', 'Travel Set', 'Luggage Set'],
     descriptions: ['Travel suitcase', 'Carry-on luggage', 'Backpack', 'Duffel bag', 'Tote bag', 'Messenger bag', 'Laptop bag', 'Gym bag', 'Travel bag set', 'Luggage set'],
@@ -954,6 +950,9 @@ function enhanceDescription(baseDescription: string, title: string, category: st
 
   const categoryKey = category.toLowerCase().replace(/\s+/g, '-');
   const categoryEnhancements = enhancements[categoryKey] || enhancements['furniture'];
+  if (!categoryEnhancements) {
+    return baseDescription; // Fallback if no enhancements found
+  }
   const randomEnhancement = categoryEnhancements[Math.floor(Math.random() * categoryEnhancements.length)];
   
   return baseDescription + randomEnhancement;
@@ -995,9 +994,17 @@ function generateProducts(): Product[] {
         const title = template.titles[i];
         let description = template.descriptions[i];
         
+        if (!title) {
+          continue; // Skip if title is missing
+        }
+        
+        if (!description) {
+          description = `Quality ${title}`;
+        }
+        
         // Enhance description if it's too short
         if (description.length < 100) {
-          description = enhanceDescription(description, title, category.name);
+          description = enhanceDescription(description, title, category.name || '');
         }
         
         const price = getRandomPrice(template.priceRange[0], template.priceRange[1]);

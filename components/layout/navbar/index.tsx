@@ -102,7 +102,9 @@ export async function Navbar() {
               />
             </svg>
           </Link>
-          <CartModal />
+          <Suspense fallback={null}>
+            <CartModal />
+          </Suspense>
         </div>
       </div>
     </nav>

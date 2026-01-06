@@ -28,12 +28,19 @@ function parseCsvField(field: string): string {
 
 function parseCsv(csvContent: string): ListingRow[] {
   const lines = csvContent.split('\n').filter(line => line.trim());
-  const headers = lines[0].split(',').map(h => parseCsvField(h.trim()));
+  if (lines.length === 0) return [];
+  
+  const firstLine = lines[0];
+  if (!firstLine) return [];
+  
+  const headers = firstLine.split(',').map(h => parseCsvField(h.trim()));
   
   const rows: ListingRow[] = [];
   
   for (let i = 1; i < lines.length; i++) {
     const line = lines[i];
+    if (!line) continue;
+    
     const values: string[] = [];
     let currentValue = '';
     let inQuotes = false;
@@ -112,7 +119,10 @@ function importListingsFromCsv() {
         return aNum - bNum;
       });
       
-      const subcategoryHandle = groupListings[0].subcategory;
+      const firstListing = groupListings[0];
+      if (!firstListing) return;
+      
+      const subcategoryHandle = firstListing.subcategory;
       
       // Find and update the template in products.ts
       const templateRegex = new RegExp(
@@ -128,7 +138,7 @@ function importListingsFromCsv() {
       const maxPrice = Math.max(...prices);
       
       // Get imageBase from first listing's main image (extract base term)
-      const firstImage = groupListings[0].mainImage;
+      const firstImage = firstListing.mainImage;
       const imageBase = firstImage.includes('placehold.co') 
         ? subcategoryHandle.split('-')[0] // Use first part of subcategory handle
         : 'product'; // Default

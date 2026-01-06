@@ -103,7 +103,9 @@ export async function addToDemoCart(
       const parts = handle.split('/');
       const lastPart = parts[parts.length - 1];
       // Убираем суффикс "-variant" если есть
-      handle = lastPart.replace(/-variant$/, '');
+      if (lastPart) {
+        handle = lastPart.replace(/-variant$/, '');
+      }
     }
     
     const product = getDemoProduct(handle);
@@ -114,6 +116,11 @@ export async function addToDemoCart(
     }
     
     const variant = product.variants[0];
+    if (!variant) {
+      console.warn(`No variant found for product: ${handle}`);
+      continue;
+    }
+    
     const existingItem = cart.lines.find(
       item => item.merchandise.id === variant.id
     );

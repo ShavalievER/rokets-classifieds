@@ -118,7 +118,9 @@ export function updateDemoAddress(id: string, updates: Partial<DeliveryAddress>)
   const index = demoAddresses.findIndex(addr => addr.id === id);
   if (index === -1) return null;
   
-  demoAddresses[index] = { ...demoAddresses[index], ...updates };
+  // Ensure id is not changed
+  const { id: _, ...safeUpdates } = updates;
+  demoAddresses[index] = { ...demoAddresses[index], ...safeUpdates } as DeliveryAddress;
   return demoAddresses[index];
 }
 
@@ -133,13 +135,16 @@ export function setDefaultAddress(id: string): boolean {
   const index = demoAddresses.findIndex(addr => addr.id === id);
   if (index === -1) return false;
   
+  const address = demoAddresses[index];
+  if (!address) return false;
+  
   // Remove default from all addresses
   demoAddresses.forEach(addr => {
     addr.isDefault = false;
   });
   
   // Set new default
-  demoAddresses[index].isDefault = true;
+  address.isDefault = true;
   return true;
 }
 
@@ -164,7 +169,9 @@ export function updateDemoPaymentMethod(id: string, updates: Partial<PaymentMeth
   const index = demoPaymentMethods.findIndex(pm => pm.id === id);
   if (index === -1) return null;
   
-  demoPaymentMethods[index] = { ...demoPaymentMethods[index], ...updates };
+  // Ensure id is not changed
+  const { id: _, ...safeUpdates } = updates;
+  demoPaymentMethods[index] = { ...demoPaymentMethods[index], ...safeUpdates } as PaymentMethod;
   return demoPaymentMethods[index];
 }
 
@@ -179,13 +186,16 @@ export function setDefaultPaymentMethod(id: string): boolean {
   const index = demoPaymentMethods.findIndex(pm => pm.id === id);
   if (index === -1) return false;
   
+  const method = demoPaymentMethods[index];
+  if (!method) return false;
+  
   // Remove default from all methods
   demoPaymentMethods.forEach(pm => {
     pm.isDefault = false;
   });
   
   // Set new default
-  demoPaymentMethods[index].isDefault = true;
+  method.isDefault = true;
   return true;
 }
 

@@ -53,7 +53,7 @@ export default function OrderMap({ order, isOpen, onClose }: Props) {
     }
 
     function initializeMap() {
-      if (!mapRef.current || !(window as any).L) return;
+      if (!mapRef.current || !(window as any).L || !route) return;
 
       // Clean up existing map if any
       if (mapInstanceRef.current) {

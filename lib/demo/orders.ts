@@ -212,12 +212,23 @@ function generateMockOrders(): Order[] {
   for (let i = 0; i < 10; i++) {
     const daysAgo = i + 1;
     const orderDate = new Date(now.getTime() - daysAgo * 24 * 60 * 60 * 1000);
-    const productHandle = productHandles[i % productHandles.length];
+    const productHandleIndex = i % productHandles.length;
+    const productHandle = productHandles[productHandleIndex];
+    if (!productHandle) {
+      continue; // Skip if handle is undefined
+    }
     const product = getDemoProduct(productHandle);
     // Get seller IDs from available sellers
     const sellerIds = ['sara', 'ahmed', 'maria', 'yousef', 'fatima'];
-    const seller = getSellerById(sellerIds[i % sellerIds.length]);
+    const sellerId = sellerIds[i % sellerIds.length];
+    if (!sellerId) {
+      continue; // Skip if sellerId is undefined
+    }
+    const seller = getSellerById(sellerId);
     const status = statuses[i % statuses.length];
+    if (!status) {
+      continue; // Skip if status is undefined
+    }
     
     const unitPrice = parseFloat(product?.variants[0]?.price.amount || '100.00');
     const deliveryPrice = 25.00;
