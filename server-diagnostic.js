@@ -72,9 +72,13 @@ let nextLoadError = null;
 let nextModule = null;
 try {
   nextModule = require('next');
+  // Check how Next.js is exported (CommonJS vs ESM)
+  const nextFunction = nextModule.default || nextModule;
   diagnostics.next = {
     loaded: true,
-    version: nextModule ? 'loaded' : 'not loaded'
+    version: nextModule ? 'loaded' : 'not loaded',
+    hasDefault: !!nextModule.default,
+    isFunction: typeof nextFunction === 'function'
   };
 } catch (e) {
   nextLoadError = e;
@@ -94,7 +98,14 @@ if (nextModule) {
     const dev = false;
     const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
     
-    nextApp = nextModule.default({
+    // Try both default and direct export
+    const nextFunction = nextModule.default || nextModule;
+    
+    if (typeof nextFunction !== 'function') {
+      throw new Error(`Next.js export is not a function. Type: ${typeof nextFunction}, has default: ${!!nextModule.default}`);
+    }
+    
+    nextApp = nextFunction({
       dev: dev,
       conf: {
         basePath: basePath,
