@@ -8,7 +8,7 @@
     "preinstall": "npm config set legacy-peer-deps true || true",
     "dev": "next dev --turbopack",
     "build": "next build",
-    "build:verpex": "NODE_OPTIONS=--max-old-space-size=2048 next build",
+    "build:verpex": "NODE_OPTIONS=--max-old-space-size=2048 npx next build",
     "build:skip": "echo 'Skipping build - using pre-built .next folder'",
     "start": "next start",
     "serve": "node server.js",
