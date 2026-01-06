@@ -25,6 +25,7 @@ let prepareStatus = {
 
 // Create Next.js app
 let nextApp = null;
+let nextAppError = null;
 try {
   const nextFunction = next.default || next;
   nextApp = nextFunction({
@@ -37,35 +38,75 @@ try {
   console.log('✅ Next.js app created');
 } catch (e) {
   console.error('❌ Failed to create Next.js app:', e);
-  process.exit(1);
+  nextAppError = {
+    message: e.message,
+    stack: e.stack
+  };
+  // Don't exit - continue to show error page
 }
 
-// Prepare Next.js
-prepareStatus.started = true;
-prepareStatus.startTime = new Date().toISOString();
-console.log('Preparing Next.js app...');
+// Prepare Next.js (only if app was created)
+if (nextApp && !nextAppError) {
+  prepareStatus.started = true;
+  prepareStatus.startTime = new Date().toISOString();
+  console.log('Preparing Next.js app...');
 
-nextApp.prepare()
-  .then(() => {
-    prepareStatus.completed = true;
-    prepareStatus.success = true;
-    prepareStatus.endTime = new Date().toISOString();
-    console.log('✅ Next.js app prepared successfully');
-  })
-  .catch((err) => {
-    prepareStatus.completed = true;
-    prepareStatus.success = false;
-    prepareStatus.error = err.message;
-    prepareStatus.endTime = new Date().toISOString();
-    console.error('❌ Next.js prepare failed:', err.message);
-    console.error('Stack:', err.stack);
-  });
+  nextApp.prepare()
+    .then(() => {
+      prepareStatus.completed = true;
+      prepareStatus.success = true;
+      prepareStatus.endTime = new Date().toISOString();
+      console.log('✅ Next.js app prepared successfully');
+    })
+    .catch((err) => {
+      prepareStatus.completed = true;
+      prepareStatus.success = false;
+      prepareStatus.error = err.message;
+      prepareStatus.endTime = new Date().toISOString();
+      console.error('❌ Next.js prepare failed:', err.message);
+      console.error('Stack:', err.stack);
+    });
+} else if (nextAppError) {
+  prepareStatus.started = true;
+  prepareStatus.completed = true;
+  prepareStatus.success = false;
+  prepareStatus.error = nextAppError.message;
+  prepareStatus.startTime = new Date().toISOString();
+  prepareStatus.endTime = new Date().toISOString();
+}
 
-// Create HTTP server
+// Create HTTP server with error handling
 const server = http.createServer((req, res) => {
-  // If prepare() is not ready, show diagnostics
-  if (!prepareStatus.completed || !prepareStatus.success) {
-    const html = `
+  try {
+    // If Next.js app creation failed, show error
+    if (nextAppError) {
+      const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Next.js Creation Error</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+    h1 { color: #f44336; }
+    .error { color: #f44336; }
+    pre { background: #2a2a2a; padding: 15px; border-radius: 5px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>❌ Failed to create Next.js app</h1>
+  <p class="error">Error: ${nextAppError.message}</p>
+  <pre>${nextAppError.stack}</pre>
+</body>
+</html>
+      `;
+      res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(html);
+      return;
+    }
+    
+    // If prepare() is not ready, show diagnostics
+    if (!prepareStatus.completed || !prepareStatus.success) {
+      const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -84,14 +125,19 @@ const server = http.createServer((req, res) => {
   <p>Please wait and refresh the page.</p>
 </body>
 </html>
-    `;
-    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-    res.end(html);
-    return;
-  }
+      `;
+      res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(html);
+      return;
+    }
   
-  // Try to handle request with Next.js
-  try {
+    // Try to handle request with Next.js
+    if (!nextApp) {
+      res.writeHead(500, { 'Content-Type': 'text/plain' });
+      res.end('Next.js app is not available');
+      return;
+    }
+    
     const handle = nextApp.getRequestHandler();
     
     // Handle request with error catching
@@ -171,9 +217,39 @@ const server = http.createServer((req, res) => {
       }
     });
   } catch (err) {
-    console.error('Error setting up handler:', err);
-    res.writeHead(500, { 'Content-Type': 'text/plain' });
-    res.end(`Error: ${err.message}\n\nStack: ${err.stack}`);
+    console.error('Error in request handler:', err);
+    console.error('Stack:', err.stack);
+    
+    // Track error
+    requestErrors.push({
+      url: req.url,
+      method: req.method,
+      error: err.message,
+      stack: err.stack,
+      timestamp: new Date().toISOString()
+    });
+    
+    if (!res.headersSent) {
+      res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+      res.end(`
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Server Error</title>
+  <style>
+    body { font-family: monospace; padding: 20px; background: #1a1a1a; color: #fff; }
+    h1 { color: #f44336; }
+    pre { background: #2a2a2a; padding: 15px; border-radius: 5px; overflow-x: auto; }
+  </style>
+</head>
+<body>
+  <h1>❌ Server Error</h1>
+  <p>Error: ${err.message}</p>
+  <pre>${err.stack}</pre>
+</body>
+</html>
+      `);
+    }
   }
 });
 
