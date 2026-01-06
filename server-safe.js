@@ -87,29 +87,36 @@ const server = http.createServer((req, res) => {
     `;
     
     // Try to use Next.js handler with maximum error protection
-    // DISABLED: Handler causes process crashes that can't be caught
-    // The issue is likely at a lower level (memory, system limits, or Next.js internals)
-    // 
-    // Possible causes:
-    // 1. Memory limits (LVE limits on shared hosting)
-    // 2. Next.js trying to load something that causes system-level crash
-    // 3. basePath configuration issue
-    // 4. Corrupted .next files
-    //
-    // Solutions to try:
-    // 1. Check with Verpex support about memory limits
-    // 2. Rebuild .next folder
-    // 3. Try standalone mode (if available)
-    // 4. Simplify Next.js configuration
-    
     if (USE_NEXTJS_HANDLER && serverState.prepareSuccess && serverState.nextApp && serverState.handle) {
-      // For now, just log that we would use handler, but don't actually call it
-      // to prevent crashes
-      console.log('Handler would be used here, but disabled to prevent crashes');
-      serverState.errors.push('Handler is disabled to prevent process crashes. prepare() works, but handler causes Internal Server Error.');
+      // Use setTimeout to defer handler call - might help avoid immediate crashes
+      setTimeout(() => {
+        try {
+          console.log('Attempting to use Next.js handler (deferred)...');
+          const handlePromise = serverState.handle(req, res);
+          
+          if (handlePromise && typeof handlePromise.catch === 'function') {
+            handlePromise.catch((err) => {
+              console.error('Next.js handler promise error:', err);
+              serverState.errors.push(`Handler promise error: ${err.message}`);
+              
+              if (!res.headersSent) {
+                res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+                res.end(`Handler error: ${err.message}\n\n${err.stack}`);
+              }
+            });
+          }
+        } catch (err) {
+          console.error('Error calling handler:', err);
+          serverState.errors.push(`Handler sync error: ${err.message}`);
+          
+          if (!res.headersSent) {
+            res.writeHead(500, { 'Content-Type': 'text/html; charset=utf-8' });
+            res.end(`Handler sync error: ${err.message}\n\n${err.stack}`);
+          }
+        }
+      }, 0);
       
-      // Show message in diagnostics instead of trying to use handler
-      // This allows us to see diagnostics while investigating the handler issue
+      return; // Let Next.js try to handle (after timeout)
     }
     
     res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
