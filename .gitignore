@@ -11,7 +11,7 @@
 
 # next.js
 /.next/
-/out/
+# /out/  # Временно разрешено для статического деплоя через Git
 
 # production
 /build
