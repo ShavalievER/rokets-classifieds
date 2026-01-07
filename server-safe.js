@@ -64,7 +64,12 @@ try {
 }
 
 // Configuration
-const USE_NEXTJS_HANDLER = true; // Enable with monitoring (with protection)
+// IMPORTANT:
+// - On Verpex we first want to SEE the diagnostic HTML page in the browser,
+//   and only потом экспериментировать с Next.js handler.
+// - Поэтому по умолчанию отключаем handler, чтобы не ловить сразу Internal Server Error.
+// - Локально при необходимости можно временно поменять на true.
+const USE_NEXTJS_HANDLER = false; // Set to true ONLY after диагностика, по умолчанию отключен
 
 // Track state
 let serverState = {
