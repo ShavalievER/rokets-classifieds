@@ -8,7 +8,7 @@ export default {
     // ppr: true,
     inlineCss: true,
     // useCache: true,
-    // cacheComponents: true, // Removed - only available in canary version
+    cacheComponents: true, // Required for 'use cache' directive
   },
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
