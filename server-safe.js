@@ -66,10 +66,13 @@ try {
 // Configuration
 // IMPORTANT:
 // - On Verpex we first want to SEE the diagnostic HTML page in the browser,
-//   and only потом экспериментировать с Next.js handler.
-// - Поэтому по умолчанию отключаем handler, чтобы не ловить сразу Internal Server Error.
-// - Локально при необходимости можно временно поменять на true.
-const USE_NEXTJS_HANDLER = false; // Set to true ONLY after диагностика, по умолчанию отключен
+//   and only потом экспериментировать с Next.js handler / Next.js загрузкой.
+// - Поэтому по умолчанию:
+//   - не загружаем Next.js (ENABLE_NEXT != 'true')
+//   - не вызываем handler (USE_NEXTJS_HANDLER = false)
+// - Локально при необходимости можно временно включить через переменную окружения.
+const ENABLE_NEXT = process.env.ENABLE_NEXT === 'true';
+const USE_NEXTJS_HANDLER = false; // Handler всегда выключен в safe‑режиме
 
 // Track state
 let serverState = {
@@ -332,70 +335,75 @@ server.listen(port, '0.0.0.0', (err) => {
   console.log('✅ SAFE SERVER RUNNING');
   console.log(`   Port: ${port}`);
   console.log(`   URL: http://0.0.0.0:${port}`);
+  console.log(`   ENABLE_NEXT: ${ENABLE_NEXT ? 'true' : 'false'}`);
   console.log('='.repeat(50));
   
-  // NOW try to load Next.js (after server is running)
-  setTimeout(() => {
-    try {
-      console.log('Attempting to load Next.js...');
-      takeMemorySnapshot('Before Next.js Load');
-      const next = require('next');
-      serverState.nextJsLoaded = true;
-      takeMemorySnapshot('After Next.js Load');
-      console.log('✅ Next.js module loaded');
-      
-      const nextFunction = next.default || next;
-      const app = nextFunction({
-        dev: false,
-        conf: {
-          basePath: basePath,
-          assetPrefix: basePath
-        }
-      });
-      
-      takeMemorySnapshot('Before App Creation');
-      serverState.nextApp = app;
-      serverState.nextAppCreated = true;
-      takeMemorySnapshot('After App Creation');
-      console.log('✅ Next.js app created');
-      
-      // Prepare
-      serverState.prepareStarted = true;
-      takeMemorySnapshot('Before Prepare');
-      console.log('Preparing Next.js app...');
-      
-      app.prepare()
-        .then(() => {
-          takeMemorySnapshot('After Prepare Success');
-          serverState.prepareCompleted = true;
-          serverState.prepareSuccess = true;
-          console.log('✅ Next.js app prepared successfully');
-          
-          // Get handler AFTER prepare() completes
-          try {
-            takeMemorySnapshot('Before Get Handler');
-            serverState.handle = app.getRequestHandler();
-            takeMemorySnapshot('After Get Handler');
-            console.log('✅ Next.js handler obtained');
-          } catch (err) {
-            console.error('❌ Failed to get handler:', err);
-            serverState.errors.push(`Failed to get handler: ${err.message}`);
-            takeMemorySnapshot('After Get Handler Error');
+  // NOW try to load Next.js (after server is running), но только если явно включено
+  if (ENABLE_NEXT) {
+    setTimeout(() => {
+      try {
+        console.log('Attempting to load Next.js (ENABLE_NEXT=true)...');
+        takeMemorySnapshot('Before Next.js Load');
+        const next = require('next');
+        serverState.nextJsLoaded = true;
+        takeMemorySnapshot('After Next.js Load');
+        console.log('✅ Next.js module loaded');
+        
+        const nextFunction = next.default || next;
+        const app = nextFunction({
+          dev: false,
+          conf: {
+            basePath: basePath,
+            assetPrefix: basePath
           }
-        })
-        .catch((err) => {
-          takeMemorySnapshot('After Prepare Error');
-          serverState.prepareCompleted = true;
-          serverState.prepareSuccess = false;
-          serverState.errors.push(`Prepare failed: ${err.message}`);
-          console.error('❌ Next.js prepare failed:', err.message);
-          console.error('Stack:', err.stack);
         });
-    } catch (err) {
-      serverState.errors.push(`Load error: ${err.message}`);
-      console.error('❌ Failed to load Next.js:', err);
-    }
-  }, 1000);
+        
+        takeMemorySnapshot('Before App Creation');
+        serverState.nextApp = app;
+        serverState.nextAppCreated = true;
+        takeMemorySnapshot('After App Creation');
+        console.log('✅ Next.js app created');
+        
+        // Prepare
+        serverState.prepareStarted = true;
+        takeMemorySnapshot('Before Prepare');
+        console.log('Preparing Next.js app...');
+        
+        app.prepare()
+          .then(() => {
+            takeMemorySnapshot('After Prepare Success');
+            serverState.prepareCompleted = true;
+            serverState.prepareSuccess = true;
+            console.log('✅ Next.js app prepared successfully');
+            
+            // Get handler AFTER prepare() completes
+            try {
+              takeMemorySnapshot('Before Get Handler');
+              serverState.handle = app.getRequestHandler();
+              takeMemorySnapshot('After Get Handler');
+              console.log('✅ Next.js handler obtained');
+            } catch (err) {
+              console.error('❌ Failed to get handler:', err);
+              serverState.errors.push(`Failed to get handler: ${err.message}`);
+              takeMemorySnapshot('After Get Handler Error');
+            }
+          })
+          .catch((err) => {
+            takeMemorySnapshot('After Prepare Error');
+            serverState.prepareCompleted = true;
+            serverState.prepareSuccess = false;
+            serverState.errors.push(`Prepare failed: ${err.message}`);
+            console.error('❌ Next.js prepare failed:', err.message);
+            console.error('Stack:', err.stack);
+          });
+      } catch (err) {
+        serverState.errors.push(`Load error: ${err.message}`);
+        console.error('❌ Failed to load Next.js:', err);
+      }
+    }, 1000);
+  } else {
+    console.log('Next.js loading is DISABLED in server-safe (ENABLE_NEXT env var is not \"true\").');
+  }
 });
 
 server.on('error', (err) => {
