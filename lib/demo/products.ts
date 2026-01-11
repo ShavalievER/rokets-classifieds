@@ -1,5 +1,6 @@
 import type { Product, Image, ProductVariant, ProductOption } from 'lib/shopify/types';
 import { CATEGORY_STRUCTURE } from './categories';
+import { generateProductImage } from './image-generator';
 
 /**
  * Demo product data for working without Shopify
@@ -746,132 +747,22 @@ const PRODUCT_TEMPLATES: Record<string, {
   }
 };
 
-// Generate image URL using Unsplash Source API for demo stock images
-// For demo purposes, using Unsplash Source API which provides high-quality images matching product descriptions
-function getPexelsImage(term: string, index: number, productTitle?: string): string {
-  // Extract key words from product title for better image relevance
-  let searchTerm = '';
+// Generate image URL using local image generator
+// Creates SVG placeholder images with product information
+// Can be replaced with GenAI-generated images stored in public/products/
+function getPexelsImage(term: string, index: number, productTitle?: string, category?: string): string {
+  // Use local image generator to create SVG images
+  // These images are embedded as data URLs - perfect for demo
+  // In production, you can generate images with GenAI and store in public/products/
   
-  if (productTitle) {
-    // Remove common words and extract meaningful keywords
-    const words = productTitle.toLowerCase()
-      .replace(/\b(set|of|with|and|the|a|an)\b/g, '')
-      .trim()
-      .split(/\s+/)
-      .filter(w => w.length > 2)
-      .slice(0, 2)
-      .join('+');
-    
-    searchTerm = words || productTitle.split(' ').slice(0, 2).join('+');
-  } else {
-    // Use term mapping for better relevance
-    const termMap: Record<string, string> = {
-      'sofa': 'modern+sofa',
-      'armchair': 'armchair',
-      'recliner': 'recliner+chair',
-      'sofa-bed': 'sofa+bed',
-      'living-room': 'living+room+furniture',
-      'tv-stand': 'tv+stand',
-      'coffee-table': 'coffee+table',
-      'side-table': 'side+table',
-      'dining-table': 'dining+table',
-      'dining-chair': 'dining+chair',
-      'dining-set': 'dining+room+set',
-      'bed': 'bedroom+bed',
-      'mattress': 'mattress',
-      'bed-frame': 'bed+frame',
-      'wardrobe': 'wardrobe',
-      'dresser': 'dresser',
-      'nightstand': 'nightstand',
-      'bedroom-set': 'bedroom+furniture',
-      'desk': 'office+desk',
-      'office-chair': 'office+chair',
-      'bookshelf': 'bookshelf',
-      'cabinet': 'cabinet',
-      'shoe-rack': 'shoe+rack',
-      'storage': 'storage+furniture',
-      'kids-furniture': 'kids+furniture',
-      'outdoor-furniture': 'outdoor+furniture',
-      'garden-furniture': 'garden+furniture',
-      'balcony-furniture': 'balcony+furniture',
-      'bar-furniture': 'bar+furniture',
-      'mirror': 'wall+mirror',
-      'phone': 'smartphone',
-      'computer': 'laptop',
-      'tv': 'television',
-      'camera': 'camera',
-      'gaming': 'gaming+setup',
-      'audio': 'speakers',
-      'shoes': 'shoes',
-      'engine': 'car+engine',
-      'car-parts': 'car+parts',
-      'car-interior': 'car+interior',
-      'tires': 'car+tires',
-      'car-electronics': 'car+electronics',
-      'car-accessories': 'car+accessories',
-      'baby-clothing': 'baby+clothes',
-      'baby-gear': 'baby+gear',
-      'nursery': 'nursery',
-      'feeding': 'baby+feeding',
-      'stroller': 'baby+stroller',
-      'baby-safety': 'baby+safety',
-      'mens-clothing': 'mens+clothing',
-      'womens-clothing': 'womens+clothing',
-      'kids-clothing': 'kids+clothing',
-      'accessories': 'fashion+accessories',
-      'luggage': 'luggage',
-      'home-decor': 'home+decor',
-      'kitchen': 'kitchen',
-      'bedding': 'bedding',
-      'garden-tools': 'garden+tools',
-      'outdoor': 'outdoor',
-      'tools': 'tools',
-      'cosmetics': 'cosmetics',
-      'skincare': 'skincare',
-      'fragrance': 'perfume',
-      'hair-care': 'hair+care',
-      'jewelry': 'jewelry',
-      'watch': 'watch',
-      'scooter': 'scooter',
-      'running': 'running+shoes',
-      'swimming': 'swimming',
-      'diving': 'diving',
-      'surfing': 'surfing',
-      'fishing': 'fishing',
-      'archery': 'archery',
-      'camping': 'camping',
-      'hiking': 'hiking',
-      'climbing': 'climbing',
-      'skiing': 'skiing',
-      'snowboarding': 'snowboarding',
-      'golf': 'golf',
-      'equestrian': 'horse+riding',
-      'motorsports': 'motorsports',
-      'protection': 'sports+protection',
-      'sports-bag': 'sports+bag',
-      'nutrition': 'sports+nutrition',
-      'recovery': 'sports+recovery',
-      'kids-sports': 'kids+sports',
-      'used-equipment': 'sports+equipment',
-      'commercial-equipment': 'gym+equipment',
-      'sports': 'sports+equipment',
-      'baby-toy': 'baby+toy',
-      'toddler-toy': 'toddler+toy',
-      'preschool-toy': 'preschool+toy',
-      'educational-toy': 'educational+toy',
-      'montessori-toy': 'montessori+toy'
-    };
-    
-    searchTerm = termMap[term] || term.replace(/-/g, '+');
+  if (productTitle && category) {
+    return generateProductImage(productTitle, category);
   }
-
-  // Use Unsplash Source API with keyword search for relevant images
-  // Format: https://source.unsplash.com/{width}x{height}/?{keywords}
-  // This provides high-quality stock images that match the product description
-  // Free, no API key required - perfect for demo
-  // Note: For production, consider using Unsplash API with proper attribution
-  const encodedQuery = encodeURIComponent(searchTerm.replace(/\+/g, ' '));
-  return `https://source.unsplash.com/800x800/?${encodedQuery}`;
+  
+  // Fallback: use term for basic image
+  const title = productTitle || term.replace(/-/g, ' ');
+  const cat = category || 'Product';
+  return generateProductImage(title, cat);
 }
 
 // Enhance description with additional details
@@ -1011,12 +902,13 @@ function generateProducts(): Product[] {
         const location = getRandomLocation();
         // Include category handle to ensure uniqueness (e.g., auto-parts-accessories-1 vs clothing-accessories-1)
         const handle = `${category.handle}-${subcategory.handle}-${i + 1}`;
-        const imageUrl = getPexelsImage(template.imageBase, i, title);
+        const categoryName = category.name || category.handle;
+        const imageUrl = getPexelsImage(template.imageBase, i, title, categoryName);
         
         // Create additional images using product title for better relevance
         const additionalImages = [
-          getPexelsImage(template.imageBase, i + 10, title),
-          getPexelsImage(template.imageBase, i + 20, title)
+          getPexelsImage(template.imageBase, i + 10, title, categoryName),
+          getPexelsImage(template.imageBase, i + 20, title, categoryName)
         ];
         
         const product = createProduct(
