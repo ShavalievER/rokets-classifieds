@@ -150,3 +150,15 @@ NODE_ENV=production
 4. ✅ Что показывают логи (если доступны)?
 5. ✅ Правильный ли Application Root? (`public_html/rokets-classifieds`)
 
+
+
+
+
+
+
+
+
+
+
+
+

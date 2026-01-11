@@ -11,6 +11,7 @@
   "/api/account/payment-methods/[id]/route": "app/api/account/payment-methods/[id]/route.js",
   "/api/account/payment-methods/route": "app/api/account/payment-methods/route.js",
   "/api/account/profile/route": "app/api/account/profile/route.js",
+  "/api/images/generate/route": "app/api/images/generate/route.js",
   "/api/messages/send/route": "app/api/messages/send/route.js",
   "/api/revalidate/route": "app/api/revalidate/route.js",
   "/api/rockets/quote/route": "app/api/rockets/quote/route.js",

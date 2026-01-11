@@ -1,5 +1,5 @@
 var R=require("../../../../chunks/[turbopack]_runtime.js")("server/app/search/[collection]/opengraph-image/route.js")
-R.c("server/chunks/[root-of-the-server]__3360c096._.js")
+R.c("server/chunks/[root-of-the-server]__12dc65af._.js")
 R.c("server/chunks/177b5_next_36a67311._.js")
 R.c("server/chunks/commerce_b246aa77._.js")
 R.c("server/chunks/[root-of-the-server]__c4240273._.js")

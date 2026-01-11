@@ -1,4 +1,6 @@
 export default {
+  // Static export configuration for static deployment
+  output: 'export',
   // Base path for deployment at /demo
   basePath: process.env.NEXT_PUBLIC_BASE_PATH || '',
   assetPrefix: process.env.NEXT_PUBLIC_BASE_PATH || '',

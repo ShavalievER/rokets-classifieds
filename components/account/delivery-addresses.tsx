@@ -3,6 +3,13 @@
 import { useState, useTransition, useEffect } from 'react';
 import { DeliveryAddress } from 'lib/demo/user';
 import { toast } from 'sonner';
+import {
+  fetchAddresses,
+  createAddress,
+  updateAddress,
+  removeAddress,
+  setDefaultAddress
+} from 'lib/demo/client-api';
 
 export default function DeliveryAddresses() {
   const [addresses, setAddresses] = useState<DeliveryAddress[]>([]);
@@ -16,13 +23,11 @@ export default function DeliveryAddresses() {
 
   const loadAddresses = async () => {
     try {
-      const response = await fetch('/api/account/addresses');
-      if (response.ok) {
-        const data = await response.json();
-        setAddresses(data);
-      }
+      const data = await fetchAddresses();
+      setAddresses(data);
     } catch (error) {
       console.error('Failed to load addresses:', error);
+      toast.error('Failed to load addresses');
     }
   };
 
@@ -45,21 +50,13 @@ export default function DeliveryAddresses() {
 
     startTransition(async () => {
       try {
-        const response = await fetch('/api/account/addresses', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newAddress)
-        });
-
-        if (response.ok) {
-          await loadAddresses();
-          setShowAddForm(false);
-          toast.success('Address added successfully');
-        } else {
-          toast.error('Failed to add address');
-        }
+        await createAddress(newAddress);
+        await loadAddresses();
+        setShowAddForm(false);
+        toast.success('Address added successfully');
       } catch (error) {
-        toast.error('An error occurred');
+        console.error('Error adding address:', error);
+        toast.error('Failed to add address');
       }
     });
   };
@@ -83,13 +80,8 @@ export default function DeliveryAddresses() {
 
     startTransition(async () => {
       try {
-        const response = await fetch(`/api/account/addresses/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updates)
-        });
-
-        if (response.ok) {
+        const result = await updateAddress(id, updates);
+        if (result) {
           await loadAddresses();
           setEditingId(null);
           toast.success('Address updated successfully');
@@ -97,6 +89,7 @@ export default function DeliveryAddresses() {
           toast.error('Failed to update address');
         }
       } catch (error) {
+        console.error('Error updating address:', error);
         toast.error('An error occurred');
       }
     });
@@ -107,17 +100,15 @@ export default function DeliveryAddresses() {
 
     startTransition(async () => {
       try {
-        const response = await fetch(`/api/account/addresses/${id}`, {
-          method: 'DELETE'
-        });
-
-        if (response.ok) {
+        const success = await removeAddress(id);
+        if (success) {
           await loadAddresses();
           toast.success('Address deleted successfully');
         } else {
           toast.error('Failed to delete address');
         }
       } catch (error) {
+        console.error('Error deleting address:', error);
         toast.error('An error occurred');
       }
     });
@@ -126,17 +117,15 @@ export default function DeliveryAddresses() {
   const handleSetDefault = async (id: string) => {
     startTransition(async () => {
       try {
-        const response = await fetch(`/api/account/addresses/${id}/default`, {
-          method: 'POST'
-        });
-
-        if (response.ok) {
+        const success = await setDefaultAddress(id);
+        if (success) {
           await loadAddresses();
           toast.success('Default address updated');
         } else {
           toast.error('Failed to set default address');
         }
       } catch (error) {
+        console.error('Error setting default address:', error);
         toast.error('An error occurred');
       }
     });

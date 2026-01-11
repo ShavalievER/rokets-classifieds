@@ -178,3 +178,15 @@ cat package.json | grep "build:verpex"
 2. ✅ На сервере: `git reset --hard origin/main` → `git pull` → `npm run build:verpex`
 3. ✅ Никогда не редактируйте код напрямую на сервере!
 
+
+
+
+
+
+
+
+
+
+
+
+

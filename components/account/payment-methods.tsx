@@ -3,6 +3,13 @@
 import { useState, useTransition, useEffect } from 'react';
 import { PaymentMethod } from 'lib/demo/user';
 import { toast } from 'sonner';
+import {
+  fetchPaymentMethods,
+  createPaymentMethod,
+  updatePaymentMethod,
+  removePaymentMethod,
+  setDefaultPaymentMethod
+} from 'lib/demo/client-api';
 
 export default function PaymentMethods() {
   const [methods, setMethods] = useState<PaymentMethod[]>([]);
@@ -16,13 +23,11 @@ export default function PaymentMethods() {
 
   const loadMethods = async () => {
     try {
-      const response = await fetch('/api/account/payment-methods');
-      if (response.ok) {
-        const data = await response.json();
-        setMethods(data);
-      }
+      const data = await fetchPaymentMethods();
+      setMethods(data);
     } catch (error) {
       console.error('Failed to load payment methods:', error);
+      toast.error('Failed to load payment methods');
     }
   };
 
@@ -41,21 +46,13 @@ export default function PaymentMethods() {
 
     startTransition(async () => {
       try {
-        const response = await fetch('/api/account/payment-methods', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newMethod)
-        });
-
-        if (response.ok) {
-          await loadMethods();
-          setShowAddForm(false);
-          toast.success('Payment method added successfully');
-        } else {
-          toast.error('Failed to add payment method');
-        }
+        await createPaymentMethod(newMethod);
+        await loadMethods();
+        setShowAddForm(false);
+        toast.success('Payment method added successfully');
       } catch (error) {
-        toast.error('An error occurred');
+        console.error('Error adding payment method:', error);
+        toast.error('Failed to add payment method');
       }
     });
   };
@@ -74,13 +71,8 @@ export default function PaymentMethods() {
 
     startTransition(async () => {
       try {
-        const response = await fetch(`/api/account/payment-methods/${id}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(updates)
-        });
-
-        if (response.ok) {
+        const result = await updatePaymentMethod(id, updates);
+        if (result) {
           await loadMethods();
           setEditingId(null);
           toast.success('Payment method updated successfully');
@@ -88,6 +80,7 @@ export default function PaymentMethods() {
           toast.error('Failed to update payment method');
         }
       } catch (error) {
+        console.error('Error updating payment method:', error);
         toast.error('An error occurred');
       }
     });
@@ -98,17 +91,15 @@ export default function PaymentMethods() {
 
     startTransition(async () => {
       try {
-        const response = await fetch(`/api/account/payment-methods/${id}`, {
-          method: 'DELETE'
-        });
-
-        if (response.ok) {
+        const success = await removePaymentMethod(id);
+        if (success) {
           await loadMethods();
           toast.success('Payment method deleted successfully');
         } else {
           toast.error('Failed to delete payment method');
         }
       } catch (error) {
+        console.error('Error deleting payment method:', error);
         toast.error('An error occurred');
       }
     });
@@ -117,17 +108,15 @@ export default function PaymentMethods() {
   const handleSetDefault = async (id: string) => {
     startTransition(async () => {
       try {
-        const response = await fetch(`/api/account/payment-methods/${id}/default`, {
-          method: 'POST'
-        });
-
-        if (response.ok) {
+        const success = await setDefaultPaymentMethod(id);
+        if (success) {
           await loadMethods();
           toast.success('Default payment method updated');
         } else {
           toast.error('Failed to set default payment method');
         }
       } catch (error) {
+        console.error('Error setting default payment method:', error);
         toast.error('An error occurred');
       }
     });
@@ -323,4 +312,7 @@ export default function PaymentMethods() {
     </section>
   );
 }
+
+
+
 

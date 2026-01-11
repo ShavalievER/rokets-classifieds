@@ -60,10 +60,42 @@ function escapeXml(unsafe: string): string {
   });
 }
 
-// Alternative: Generate image using a service (placeholder for GenAI integration)
-export async function generateImageWithAI(prompt: string): Promise<string> {
-  // TODO: Integrate with GenAI service (OpenAI DALL-E, Stable Diffusion, etc.)
-  // For now, return a placeholder
-  throw new Error('GenAI integration not implemented yet. Use generateProductImage instead.');
+// Generate image using OpenAI DALL-E API
+export async function generateImageWithAI(productTitle: string, category: string): Promise<string> {
+  try {
+    // Create a descriptive prompt for the product
+    const prompt = `A professional product photograph of ${productTitle} in the ${category} category. Clean background, well-lit, e-commerce style, high quality, realistic, no watermarks, no text`;
+    
+    // Call the API route
+    const response = await fetch('/api/images/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        size: '1024x1024'
+      })
+    });
+
+    if (!response.ok) {
+      // If API is not available or fails, fallback to SVG
+      console.warn('OpenAI API not available, using SVG fallback');
+      return generateProductImage(productTitle, category);
+    }
+
+    const data = await response.json();
+    
+    if (data.url) {
+      return data.url;
+    } else {
+      // Fallback to SVG if no URL returned
+      return generateProductImage(productTitle, category);
+    }
+  } catch (error) {
+    // On error, fallback to SVG
+    console.warn('Error generating image with AI, using SVG fallback:', error);
+    return generateProductImage(productTitle, category);
+  }
 }
 

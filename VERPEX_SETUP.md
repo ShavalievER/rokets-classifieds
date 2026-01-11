@@ -111,3 +111,15 @@ npm run build
 
 Затем в cPanel просто укажите правильный `Application root` и `Startup file: server.js`.
 
+
+
+
+
+
+
+
+
+
+
+
+

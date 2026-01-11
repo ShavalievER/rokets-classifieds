@@ -129,3 +129,15 @@ NODE_ENV=production
 - `❌ .next folder NOT found` - отсутствует build
 - `Cannot find module` - отсутствуют зависимости
 
+
+
+
+
+
+
+
+
+
+
+
+

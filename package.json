@@ -12,10 +12,17 @@
     "build:skip": "echo 'Skipping build - using pre-built .next folder'",
     "start": "next start",
     "serve": "node server.js",
+    "serve:dynamic": "node server-local.js",
+    "dev:dynamic": "node server-local.js",
+    "serve:static": "node test-static-local.js",
+    "test:static": "node test-static-local.js",
+    "build:static": "npm run build && git add out/ && git commit -m \"Update: Rebuild static export\" || echo \"No changes in out/\"",
+    "update:static": "npm run build && git add out/ && git status --short out/",
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown .",
     "test": "pnpm prettier:check",
-    "export-listings": "npx tsx scripts/export-listings.ts"
+    "export-listings": "npx tsx scripts/export-listings.ts",
+    "generate-images": "npx tsx scripts/generate-images.ts"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.0",
@@ -23,6 +30,7 @@
     "clsx": "^2.1.1",
     "geist": "^1.5.1",
     "next": "^15.1.0",
+    "openai": "^4.77.1",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "sonner": "^2.0.1",

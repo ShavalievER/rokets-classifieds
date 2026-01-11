@@ -179,3 +179,15 @@ NEXT_IMAGE_OPTIMIZATION=false npm run build
 
 Это самый надежный способ для shared hosting с ограничениями памяти!
 
+
+
+
+
+
+
+
+
+
+
+
+

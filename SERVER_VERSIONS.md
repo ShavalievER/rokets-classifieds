@@ -98,3 +98,13 @@ npm run serve
 - **server-safe.js**: Создан для решения проблем с крашами на Verpex shared hosting
 - **server.js**: Основная версия для продакшена
 
+
+
+
+
+
+
+
+
+
+

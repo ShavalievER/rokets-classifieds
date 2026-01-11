@@ -11,6 +11,7 @@
   "/api/account/payment-methods/[id]/route": "/api/account/payment-methods/[id]",
   "/api/account/payment-methods/route": "/api/account/payment-methods",
   "/api/account/profile/route": "/api/account/profile",
+  "/api/images/generate/route": "/api/images/generate",
   "/api/messages/send/route": "/api/messages/send",
   "/api/revalidate/route": "/api/revalidate",
   "/api/rockets/quote/route": "/api/rockets/quote",

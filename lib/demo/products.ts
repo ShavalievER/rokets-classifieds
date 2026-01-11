@@ -1,10 +1,12 @@
 import type { Product, Image, ProductVariant, ProductOption } from 'lib/shopify/types';
 import { CATEGORY_STRUCTURE } from './categories';
 import { generateProductImage } from './image-generator';
+import { existsSync } from 'fs';
+import { join } from 'path';
 
 /**
  * Demo product data for working without Shopify
- * Generated products: 10 per subcategory
+ * Generated products: 1 per subcategory
  */
 
 const LOCATIONS = ['Dubai', 'Sharjah', 'Abu Dhabi', 'Ajman', 'RAK'];
@@ -747,6 +749,32 @@ const PRODUCT_TEMPLATES: Record<string, {
   }
 };
 
+/**
+ * Get image URL for a product
+ * First checks if AI-generated image exists in public/products/{handle}.jpg
+ * Falls back to SVG placeholder if image doesn't exist
+ */
+function getProductImageUrl(handle: string, productTitle: string, category: string): string {
+  // Check if AI-generated image exists
+  // In Node.js environment (build time), we can check file system
+  if (typeof process !== 'undefined' && process.cwd) {
+    try {
+      const imagePath = join(process.cwd(), 'public', 'products', `${handle}.jpg`);
+      if (existsSync(imagePath)) {
+        // Return path relative to public folder (will be served as /products/{handle}.jpg)
+        const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+        return `${basePath}/products/${handle}.jpg`;
+      }
+    } catch (error) {
+      // If file system check fails, fall back to SVG
+      // Silently ignore in production
+    }
+  }
+  
+  // Fallback to SVG placeholder
+  return generateProductImage(productTitle, category);
+}
+
 // Generate image URL using local image generator
 // Creates SVG placeholder images with product information
 // Can be replaced with GenAI-generated images stored in public/products/
@@ -881,7 +909,7 @@ function generateProducts(): Product[] {
     category.subcategories?.forEach(subcategory => {
       const template = PRODUCT_TEMPLATES[subcategory.handle] || getDefaultTemplate(subcategory.name, category.name);
       
-      for (let i = 0; i < 10; i++) {
+      for (let i = 0; i < 1; i++) {
         const title = template.titles[i];
         let description = template.descriptions[i];
         
@@ -903,13 +931,13 @@ function generateProducts(): Product[] {
         // Include category handle to ensure uniqueness (e.g., auto-parts-accessories-1 vs clothing-accessories-1)
         const handle = `${category.handle}-${subcategory.handle}-${i + 1}`;
         const categoryName = category.name || category.handle;
-        const imageUrl = getPexelsImage(template.imageBase, i, title, categoryName);
         
-        // Create additional images using product title for better relevance
-        const additionalImages = [
-          getPexelsImage(template.imageBase, i + 10, title, categoryName),
-          getPexelsImage(template.imageBase, i + 20, title, categoryName)
-        ];
+        // Use saved AI-generated image if available, otherwise fallback to SVG
+        const imageUrl = getProductImageUrl(handle, title, categoryName);
+        
+        // For additional images, use the same image or create variations
+        // Since we only generate one image per product, we'll use the same image
+        const additionalImages: string[] = [];
         
         const product = createProduct(
           handle,

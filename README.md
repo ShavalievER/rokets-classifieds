@@ -90,7 +90,7 @@ Optional variables:
 
 ### Categories & Products
 - 8 main categories with multiple subcategories
-- 10 products per subcategory (auto-generated)
+- 1 product per subcategory (auto-generated)
 - Product cards with images, prices, and delivery costs
 - Detailed product pages with seller information
 

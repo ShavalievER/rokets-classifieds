@@ -1,7 +1,7 @@
 {
   "pages": {},
   "app": {
-    "[project]/app/product/[handle]/page": [
+    "[project]/commerce/app/product/[handle]/page": [
       "static/media/Geist_Variable-s.p.70416cc0.woff2"
     ]
   },
