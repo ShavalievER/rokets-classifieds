@@ -1,7 +1,7 @@
 import { getCollection, getCollectionProducts } from 'lib/shopify';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { getCategoryByHandle, getSubcategoryByHandle } from 'lib/demo/categories';
+import { getCategoryByHandle, getSubcategoryByHandle, CATEGORY_STRUCTURE } from 'lib/demo/categories';
 
 import Grid from 'components/grid';
 import ProductGridItems from 'components/layout/product-grid-items';
@@ -9,6 +9,34 @@ import Pagination from 'components/layout/pagination';
 import Filters from 'components/layout/search/filters';
 import { defaultSort, sorting } from 'lib/constants';
 import { Suspense } from 'react';
+
+export const dynamic = 'force-static';
+
+export async function generateStaticParams() {
+  const params: Array<{ collection: string; subcategory?: string[] }> = [];
+  
+  // Add "All Categories" route (empty collection)
+  // For optional catch-all, we can include empty array or omit the parameter
+  params.push({ collection: '', subcategory: [] });
+  
+  // Add all main categories
+  for (const category of CATEGORY_STRUCTURE) {
+    // Add main category route (with empty subcategory array for optional catch-all)
+    params.push({ collection: category.handle, subcategory: [] });
+    
+    // Add all subcategories
+    if (category.subcategories && category.subcategories.length > 0) {
+      for (const sub of category.subcategories) {
+        params.push({ 
+          collection: category.handle, 
+          subcategory: [sub.handle] 
+        });
+      }
+    }
+  }
+  
+  return params;
+}
 
 export async function generateMetadata(props: {
   params: Promise<{ collection: string; subcategory?: string[] }>;

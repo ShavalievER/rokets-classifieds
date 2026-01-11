@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation';
 import Footer from 'components/layout/footer';
 import { getCart } from 'lib/shopify';
 
+export const dynamic = 'force-static';
+
 export const metadata = {
   title: 'Order Confirmation',
   description: 'Your order has been received and is being processed.'

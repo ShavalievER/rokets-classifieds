@@ -2,10 +2,10 @@
 
 import { PlusIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
-import { addItem } from 'components/cart/actions';
+// import { addItem } from 'components/cart/actions'; // Disabled for static export
 import { useProduct } from 'components/product/product-context';
 import { Product, ProductVariant } from 'lib/shopify/types';
-import { useActionState, useState } from 'react';
+import { useState } from 'react'; // useActionState removed for static export
 import { useCart } from './cart-context';
 
 function SubmitButton({
@@ -61,7 +61,7 @@ export function AddToCart({ product }: { product: Product }) {
   const { variants, availableForSale } = product;
   const { addCartItem } = useCart();
   const { state } = useProduct();
-  const [message, formAction] = useActionState(addItem, null);
+  // const [message, formAction] = useActionState(addItem, null); // Disabled for static export
   const [clientMessage, setClientMessage] = useState<string | null>(null);
 
   const variant = variants.find((variant: ProductVariant) =>
@@ -81,15 +81,8 @@ export function AddToCart({ product }: { product: Product }) {
     // Always add to cart optimistically (client-side)
     addCartItem(finalVariant, product);
     
-    // Try server action, but don't fail if it's not available (static mode)
-    try {
-      await formAction(formData);
-      setClientMessage('Item added to cart');
-    } catch (error) {
-      // Server action not available (static mode) - that's OK, we already added to cart
-      console.log('Server action not available, using client-side cart only');
-      setClientMessage('Item added to cart');
-    }
+    // Server actions disabled for static export - using client-side cart only
+    setClientMessage('Item added to cart');
   };
 
   return (
@@ -99,7 +92,7 @@ export function AddToCart({ product }: { product: Product }) {
         selectedVariantId={selectedVariantId}
       />
       <p aria-live="polite" className="sr-only" role="status">
-        {message || clientMessage}
+        {clientMessage}
       </p>
       {clientMessage && (
         <p className="mt-2 text-sm text-green-600 dark:text-green-400" role="status">

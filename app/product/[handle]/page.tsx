@@ -16,6 +16,16 @@ import { ProductDescription } from 'components/product/product-description';
 import { HIDDEN_PRODUCT_TAG } from 'lib/constants';
 import { getProduct, getProductRecommendations } from 'lib/shopify';
 import type { Image } from 'lib/shopify/types';
+import { getDemoProducts } from 'lib/demo/products';
+
+export const dynamic = 'force-static';
+
+export async function generateStaticParams() {
+  const products = getDemoProducts();
+  return products.map((product) => ({
+    handle: product.handle
+  }));
+}
 
 export async function generateMetadata(props: {
   params: Promise<{ handle: string }>;

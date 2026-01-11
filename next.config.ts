@@ -18,6 +18,7 @@ export default {
   // Disable source maps in production to save memory
   productionBrowserSourceMaps: false,
   images: {
+    unoptimized: true, // Required for static export
     formats: ['image/avif', 'image/webp'],
     dangerouslyAllowSVG: true,
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",

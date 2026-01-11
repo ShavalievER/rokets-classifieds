@@ -301,29 +301,37 @@ export async function updateCart(
 }
 
 export async function getCart(): Promise<Cart | undefined> {
-  const cartId = (await cookies()).get('cartId')?.value;
+  // For static export, cookies() is not available
+  // Return undefined to allow static generation
+  try {
+    const cartId = (await cookies()).get('cartId')?.value;
 
-  if (!cartId) {
+    if (!cartId) {
+      return undefined;
+    }
+
+    if (!endpoint) {
+      // Используем демо-реализацию корзины
+      const { getDemoCart } = await import('lib/demo/cart');
+      return getDemoCart(cartId);
+    }
+
+    const res = await shopifyFetch<ShopifyCartOperation>({
+      query: getCartQuery,
+      variables: { cartId }
+    });
+
+    // Old carts becomes `null` when you checkout.
+    if (!res.body.data.cart) {
+      return undefined;
+    }
+
+    return reshapeCart(res.body.data.cart);
+  } catch (error) {
+    // In static export, cookies() throws an error
+    // Return undefined to allow static generation
     return undefined;
   }
-
-  if (!endpoint) {
-    // Используем демо-реализацию корзины
-    const { getDemoCart } = await import('lib/demo/cart');
-    return getDemoCart(cartId);
-  }
-
-  const res = await shopifyFetch<ShopifyCartOperation>({
-    query: getCartQuery,
-    variables: { cartId }
-  });
-
-  // Old carts becomes `null` when you checkout.
-  if (!res.body.data.cart) {
-    return undefined;
-  }
-
-  return reshapeCart(res.body.data.cart);
 }
 
 export async function getCollection(

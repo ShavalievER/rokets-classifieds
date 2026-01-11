@@ -5,6 +5,8 @@ import { defaultSort, sorting } from 'lib/constants';
 import { getProducts } from 'lib/shopify';
 import { Suspense } from 'react';
 
+export const dynamic = 'force-static';
+
 export const metadata = {
   title: 'Search',
   description: 'Search for products in the store.'
