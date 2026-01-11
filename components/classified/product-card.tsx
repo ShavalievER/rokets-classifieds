@@ -50,19 +50,19 @@ export default function ClassifiedProductCard({ product }: ClassifiedProductCard
                 maximumFractionDigits: 2
               })}
             </span>
-            <span className="text-xs text-neutral-500 dark:text-neutral-400">AED</span>
+            <span className="text-xs font-bold text-blue-600 dark:text-blue-400">AED</span>
           </div>
 
           {/* Delivery Price */}
           <div className="flex items-baseline gap-2">
             <span className="text-xs text-neutral-600 dark:text-neutral-400">🚀 Delivery:</span>
-            <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+            <span className="text-sm font-bold text-blue-600 dark:text-blue-400">
               {parseFloat(DEFAULT_DELIVERY_PRICE).toLocaleString('en-US', {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
               })}
             </span>
-            <span className="text-xs text-neutral-500 dark:text-neutral-400">AED</span>
+            <span className="text-xs font-bold text-blue-600 dark:text-blue-400">AED</span>
           </div>
         </div>
       </div>
