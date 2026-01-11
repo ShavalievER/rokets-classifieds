@@ -746,10 +746,11 @@ const PRODUCT_TEMPLATES: Record<string, {
   }
 };
 
-// Generate image URL using stable placeholders (placehold.co) with better relevance
+// Generate image URL using Unsplash Source API for stock images with watermark
+// For demo purposes, using Unsplash Source API which provides high-quality stock images
 function getPexelsImage(term: string, index: number, productTitle?: string): string {
   // Extract key words from product title for better image relevance
-  let imageLabel = '';
+  let searchTerm = '';
   
   if (productTitle) {
     // Remove common words and extract meaningful keywords
@@ -758,120 +759,120 @@ function getPexelsImage(term: string, index: number, productTitle?: string): str
       .trim()
       .split(/\s+/)
       .filter(w => w.length > 2)
-      .slice(0, 3)
-      .join(' ');
+      .slice(0, 2)
+      .join('+');
     
-    imageLabel = words || productTitle.split(' ').slice(0, 2).join(' ');
+    searchTerm = words || productTitle.split(' ').slice(0, 2).join('+');
   } else {
     // Use term mapping for better relevance
     const termMap: Record<string, string> = {
-      'sofa': 'modern sofa furniture',
-      'armchair': 'comfortable armchair',
-      'recliner': 'recliner chair',
-      'sofa-bed': 'sofa bed convertible',
-      'living-room': 'living room furniture',
-      'tv-stand': 'tv stand media unit',
-      'coffee-table': 'coffee table living room',
-      'side-table': 'side table end table',
-      'dining-table': 'dining table wood',
-      'dining-chair': 'dining chair',
-      'dining-set': 'dining room set',
-      'bed': 'bedroom bed frame',
-      'mattress': 'mattress bed',
-      'bed-frame': 'bed frame',
-      'wardrobe': 'wardrobe closet',
-      'dresser': 'dresser chest',
-      'nightstand': 'nightstand bedside',
-      'bedroom-set': 'bedroom furniture',
-      'desk': 'desk office',
-      'office-chair': 'office chair',
-      'bookshelf': 'bookshelf bookcase',
-      'cabinet': 'cabinet storage',
-      'shoe-rack': 'shoe rack organizer',
-      'storage': 'storage furniture',
-      'kids-furniture': 'kids furniture',
-      'outdoor-furniture': 'outdoor furniture',
-      'garden-furniture': 'garden furniture',
-      'balcony-furniture': 'balcony furniture',
-      'bar-furniture': 'bar furniture',
-      'mirror': 'mirror wall',
-      'phone': 'smartphone mobile',
-      'computer': 'laptop computer',
-      'tv': 'television tv',
-      'camera': 'camera photography',
-      'gaming': 'gaming setup',
-      'audio': 'audio speakers',
-      'shoes': 'shoes footwear',
-      'engine': 'car engine parts',
-      'car-parts': 'car parts',
-      'car-interior': 'car interior',
-      'tires': 'car tires wheels',
-      'car-electronics': 'car electronics',
-      'car-accessories': 'car accessories',
-      'baby-clothing': 'baby clothes',
-      'baby-gear': 'baby gear',
-      'nursery': 'nursery furniture',
-      'feeding': 'baby feeding',
-      'stroller': 'baby stroller',
-      'baby-safety': 'baby safety',
-      'mens-clothing': 'mens clothing',
-      'womens-clothing': 'womens clothing',
-      'kids-clothing': 'kids clothing',
-      'accessories': 'fashion accessories',
-      'luggage': 'luggage suitcase',
-      'home-decor': 'home decor',
-      'kitchen': 'kitchen dining',
-      'bedding': 'bedding linens',
-      'garden-tools': 'garden tools',
-      'outdoor': 'outdoor living',
-      'tools': 'tools hardware',
-      'cosmetics': 'cosmetics makeup',
-      'skincare': 'skincare beauty',
-      'fragrance': 'perfume fragrance',
-      'hair-care': 'hair care',
-      'jewelry': 'jewelry accessories',
-      'watch': 'watch timepiece',
-      'scooter': 'scooter electric',
-      'running': 'running shoes',
-      'swimming': 'swimming gear',
-      'diving': 'diving equipment',
-      'surfing': 'surfing board',
-      'fishing': 'fishing gear',
-      'archery': 'archery bow',
-      'camping': 'camping gear',
-      'hiking': 'hiking boots',
-      'climbing': 'climbing gear',
-      'skiing': 'skiing equipment',
-      'snowboarding': 'snowboarding gear',
-      'golf': 'golf equipment',
-      'equestrian': 'horse riding',
-      'motorsports': 'motorsports gear',
-      'protection': 'sports protection',
-      'sports-bag': 'sports bag',
-      'nutrition': 'sports nutrition',
-      'recovery': 'sports recovery',
-      'kids-sports': 'kids sports',
-      'used-equipment': 'used sports equipment',
-      'commercial-equipment': 'gym equipment',
-      'sports': 'sports equipment',
-      'baby-toy': 'baby toy',
-      'toddler-toy': 'toddler toy',
-      'preschool-toy': 'preschool toy',
-      'educational-toy': 'educational toy',
-      'montessori-toy': 'montessori toy'
+      'sofa': 'modern+sofa',
+      'armchair': 'armchair',
+      'recliner': 'recliner+chair',
+      'sofa-bed': 'sofa+bed',
+      'living-room': 'living+room+furniture',
+      'tv-stand': 'tv+stand',
+      'coffee-table': 'coffee+table',
+      'side-table': 'side+table',
+      'dining-table': 'dining+table',
+      'dining-chair': 'dining+chair',
+      'dining-set': 'dining+room+set',
+      'bed': 'bedroom+bed',
+      'mattress': 'mattress',
+      'bed-frame': 'bed+frame',
+      'wardrobe': 'wardrobe',
+      'dresser': 'dresser',
+      'nightstand': 'nightstand',
+      'bedroom-set': 'bedroom+furniture',
+      'desk': 'office+desk',
+      'office-chair': 'office+chair',
+      'bookshelf': 'bookshelf',
+      'cabinet': 'cabinet',
+      'shoe-rack': 'shoe+rack',
+      'storage': 'storage+furniture',
+      'kids-furniture': 'kids+furniture',
+      'outdoor-furniture': 'outdoor+furniture',
+      'garden-furniture': 'garden+furniture',
+      'balcony-furniture': 'balcony+furniture',
+      'bar-furniture': 'bar+furniture',
+      'mirror': 'wall+mirror',
+      'phone': 'smartphone',
+      'computer': 'laptop',
+      'tv': 'television',
+      'camera': 'camera',
+      'gaming': 'gaming+setup',
+      'audio': 'speakers',
+      'shoes': 'shoes',
+      'engine': 'car+engine',
+      'car-parts': 'car+parts',
+      'car-interior': 'car+interior',
+      'tires': 'car+tires',
+      'car-electronics': 'car+electronics',
+      'car-accessories': 'car+accessories',
+      'baby-clothing': 'baby+clothes',
+      'baby-gear': 'baby+gear',
+      'nursery': 'nursery',
+      'feeding': 'baby+feeding',
+      'stroller': 'baby+stroller',
+      'baby-safety': 'baby+safety',
+      'mens-clothing': 'mens+clothing',
+      'womens-clothing': 'womens+clothing',
+      'kids-clothing': 'kids+clothing',
+      'accessories': 'fashion+accessories',
+      'luggage': 'luggage',
+      'home-decor': 'home+decor',
+      'kitchen': 'kitchen',
+      'bedding': 'bedding',
+      'garden-tools': 'garden+tools',
+      'outdoor': 'outdoor',
+      'tools': 'tools',
+      'cosmetics': 'cosmetics',
+      'skincare': 'skincare',
+      'fragrance': 'perfume',
+      'hair-care': 'hair+care',
+      'jewelry': 'jewelry',
+      'watch': 'watch',
+      'scooter': 'scooter',
+      'running': 'running+shoes',
+      'swimming': 'swimming',
+      'diving': 'diving',
+      'surfing': 'surfing',
+      'fishing': 'fishing',
+      'archery': 'archery',
+      'camping': 'camping',
+      'hiking': 'hiking',
+      'climbing': 'climbing',
+      'skiing': 'skiing',
+      'snowboarding': 'snowboarding',
+      'golf': 'golf',
+      'equestrian': 'horse+riding',
+      'motorsports': 'motorsports',
+      'protection': 'sports+protection',
+      'sports-bag': 'sports+bag',
+      'nutrition': 'sports+nutrition',
+      'recovery': 'sports+recovery',
+      'kids-sports': 'kids+sports',
+      'used-equipment': 'sports+equipment',
+      'commercial-equipment': 'gym+equipment',
+      'sports': 'sports+equipment',
+      'baby-toy': 'baby+toy',
+      'toddler-toy': 'toddler+toy',
+      'preschool-toy': 'preschool+toy',
+      'educational-toy': 'educational+toy',
+      'montessori-toy': 'montessori+toy'
     };
     
-    imageLabel = termMap[term] || term.replace(/-/g, ' ');
+    searchTerm = termMap[term] || term.replace(/-/g, '+');
   }
 
-  // Ensure some variation between images
-  const variant = (index % 5) + 1;
-  const color = ['059669', '4F46E5', '7C3AED', 'DC2626', 'EA580C'][variant - 1];
-
-  // Use placehold.co with better formatting
-  return `https://placehold.co/800x800/${color}/FFFFFF?text=${encodeURIComponent(
-    imageLabel.charAt(0).toUpperCase() + imageLabel.slice(1)
-  )}`;
+  // Use stable seed based on term and index for consistent images
+  const seed = `${searchTerm}-${index}`;
+  
+  // Use Unsplash Source API for stock images (free, high-quality)
+  // Format: https://source.unsplash.com/WIDTHxHEIGHT/?KEYWORD
+  // For demo with watermark indication, we'll use Unsplash images
+  // Note: These are demo images - for production use licensed images
+  return `https://source.unsplash.com/800x800/?${searchTerm}&sig=${index}`;
 }
 
 // Enhance description with additional details
