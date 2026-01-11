@@ -746,8 +746,8 @@ const PRODUCT_TEMPLATES: Record<string, {
   }
 };
 
-// Generate image URL using Picsum Photos for demo stock images
-// For demo purposes, using Picsum Photos which provides high-quality placeholder images
+// Generate image URL using Unsplash Source API for demo stock images
+// For demo purposes, using Unsplash Source API which provides high-quality images matching product descriptions
 function getPexelsImage(term: string, index: number, productTitle?: string): string {
   // Extract key words from product title for better image relevance
   let searchTerm = '';
@@ -865,20 +865,13 @@ function getPexelsImage(term: string, index: number, productTitle?: string): str
     searchTerm = termMap[term] || term.replace(/-/g, '+');
   }
 
-  // Use stable seed based on term and index for consistent images
-  // Convert search term and index to a numeric seed
-  let seed = 0;
-  for (let i = 0; i < searchTerm.length; i++) {
-    seed = ((seed << 5) - seed) + searchTerm.charCodeAt(i);
-    seed = seed & seed; // Convert to 32bit integer
-  }
-  seed = Math.abs(seed) + index;
-  
-  // Use Picsum Photos (Lorem Picsum) for demo stock images
-  // Format: https://picsum.photos/seed/{seed}/{width}/{height}
-  // This provides consistent, high-quality placeholder images
-  // Note: These are demo images - for production use licensed images
-  return `https://picsum.photos/seed/${seed}/800/800`;
+  // Use Unsplash Source API with keyword search for relevant images
+  // Format: https://source.unsplash.com/{width}x{height}/?{keywords}
+  // This provides high-quality stock images that match the product description
+  // Free, no API key required - perfect for demo
+  // Note: For production, consider using Unsplash API with proper attribution
+  const encodedQuery = encodeURIComponent(searchTerm.replace(/\+/g, ' '));
+  return `https://source.unsplash.com/800x800/?${encodedQuery}`;
 }
 
 // Enhance description with additional details
