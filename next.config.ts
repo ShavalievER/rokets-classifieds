@@ -37,6 +37,11 @@ export default {
       },
       {
         protocol: 'https',
+        hostname: 'picsum.photos',
+        pathname: '/**'
+      },
+      {
+        protocol: 'https',
         hostname: 'images.pexels.com',
         pathname: '/**'
       },
