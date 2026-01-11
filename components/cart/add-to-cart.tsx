@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { addItem } from 'components/cart/actions';
 import { useProduct } from 'components/product/product-context';
 import { Product, ProductVariant } from 'lib/shopify/types';
-import { useActionState } from 'react';
+import { useActionState, useState } from 'react';
 import { useCart } from './cart-context';
 
 function SubmitButton({
@@ -62,6 +62,7 @@ export function AddToCart({ product }: { product: Product }) {
   const { addCartItem } = useCart();
   const { state } = useProduct();
   const [message, formAction] = useActionState(addItem, null);
+  const [clientMessage, setClientMessage] = useState<string | null>(null);
 
   const variant = variants.find((variant: ProductVariant) =>
     variant.selectedOptions.every(
@@ -74,21 +75,37 @@ export function AddToCart({ product }: { product: Product }) {
     (variant) => variant.id === selectedVariantId
   )!;
 
+  const handleAddToCart = async (formData: FormData) => {
+    formData.set('variantId', selectedVariantId!);
+    
+    // Always add to cart optimistically (client-side)
+    addCartItem(finalVariant, product);
+    
+    // Try server action, but don't fail if it's not available (static mode)
+    try {
+      await formAction(formData);
+      setClientMessage('Item added to cart');
+    } catch (error) {
+      // Server action not available (static mode) - that's OK, we already added to cart
+      console.log('Server action not available, using client-side cart only');
+      setClientMessage('Item added to cart');
+    }
+  };
+
   return (
-    <form
-      action={async (formData: FormData) => {
-        formData.set('variantId', selectedVariantId!);
-        addCartItem(finalVariant, product);
-        formAction(formData);
-      }}
-    >
+    <form action={handleAddToCart}>
       <SubmitButton
         availableForSale={availableForSale}
         selectedVariantId={selectedVariantId}
       />
       <p aria-live="polite" className="sr-only" role="status">
-        {message}
+        {message || clientMessage}
       </p>
+      {clientMessage && (
+        <p className="mt-2 text-sm text-green-600 dark:text-green-400" role="status">
+          {clientMessage}
+        </p>
+      )}
     </form>
   );
 }

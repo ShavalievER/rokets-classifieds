@@ -145,8 +145,11 @@ export function setDefaultClientAddress(id: string): boolean {
   const index = addresses.findIndex(addr => addr.id === id);
   if (index === -1) return false;
   
+  const address = addresses[index];
+  if (!address) return false;
+  
   addresses.forEach(addr => { addr.isDefault = false; });
-  addresses[index].isDefault = true;
+  address.isDefault = true;
   setClientAddresses(addresses);
   return true;
 }
@@ -224,8 +227,11 @@ export function setDefaultClientPaymentMethod(id: string): boolean {
   const index = methods.findIndex(pm => pm.id === id);
   if (index === -1) return false;
   
+  const method = methods[index];
+  if (!method) return false;
+  
   methods.forEach(pm => { pm.isDefault = false; });
-  methods[index].isDefault = true;
+  method.isDefault = true;
   setClientPaymentMethods(methods);
   return true;
 }

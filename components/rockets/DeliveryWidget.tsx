@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { PlusIcon } from '@heroicons/react/24/outline';
-import { addItem } from 'components/cart/actions';
 import { useCart } from 'components/cart/cart-context';
 import { useProduct } from 'components/product/product-context';
 import { Product } from 'lib/shopify/types';
@@ -45,16 +44,17 @@ export default function DeliveryWidget(props: Props) {
   useEffect(() => {
     async function loadAddresses() {
       try {
-        const response = await fetch('/api/account/addresses');
-        if (response.ok) {
-          const data = await response.json();
-          setAddresses(data);
-          // Auto-select default address if available
-          const defaultAddr = data.find((addr: DeliveryAddress) => addr.isDefault);
-          if (defaultAddr) {
-            setSelectedAddressId(defaultAddr.id);
-          } else if (data.length > 0) {
-            setSelectedAddressId(data[0].id);
+        const { fetchAddresses } = await import('lib/demo/client-api');
+        const data = await fetchAddresses();
+        setAddresses(data);
+        // Auto-select default address if available
+        const defaultAddr = data.find((addr: DeliveryAddress) => addr.isDefault);
+        if (defaultAddr) {
+          setSelectedAddressId(defaultAddr.id);
+        } else if (data.length > 0) {
+          const firstAddr = data[0];
+          if (firstAddr) {
+            setSelectedAddressId(firstAddr.id);
           }
         }
       } catch (error) {
@@ -92,19 +92,37 @@ export default function DeliveryWidget(props: Props) {
     
     setLoading(true);
     try {
-      const res = await fetch("/api/rockets/quote", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          listingId: props.listingId,
+      // Try API route first, fallback to client calculation
+      let quoteData;
+      try {
+        const res = await fetch("/api/rockets/quote", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            listingId: props.listingId,
+            pickupArea,
+            dropoffArea: dropoffAddress,
+            declaredValueAed: props.declaredValueAed ?? 300,
+            weightKg: props.weightKg ?? 3,
+            fragile: props.fragile ?? false
+          })
+        });
+        if (res.ok) {
+          quoteData = await res.json();
+        } else {
+          throw new Error('API route not available');
+        }
+      } catch (apiError) {
+        // Fallback to client-side calculation
+        const { getDeliveryQuote } = await import('lib/demo/client-api');
+        quoteData = await getDeliveryQuote({
           pickupArea,
           dropoffArea: dropoffAddress,
           declaredValueAed: props.declaredValueAed ?? 300,
           weightKg: props.weightKg ?? 3,
           fragile: props.fragile ?? false
-        })
-      });
-      const quoteData = await res.json();
+        });
+      }
       setQuote(quoteData);
     } catch (error) {
       console.error("Error fetching quote:", error);
@@ -238,21 +256,25 @@ export default function DeliveryWidget(props: Props) {
                 try {
                   const deliveryPrice = Number(quote.price) || 0;
                   
-                  // Optimistic update with delivery price
+                  // Always add to cart optimistically (client-side)
                   if (finalVariant) {
-                    // @ts-ignore - deliveryPrice is supported in addCartItem
                     addCartItem(finalVariant, props.product, deliveryPrice);
                   }
-                  // Server action - call addItem directly with FormData
-                  const formData = new FormData();
-                  formData.set('variantId', selectedVariantId!);
-                  formData.set('deliveryPrice', deliveryPrice.toString());
-                  const result = await addItem(null, formData as any);
                   
-                  // Refresh the router to update the cart
-                  router.refresh();
-                  
-                  setMessage(result || 'Item added to cart');
+                  // Try server action, but don't fail if it's not available (static mode)
+                  try {
+                    const { addItem } = await import('components/cart/actions');
+                    const formData = new FormData();
+                    formData.set('variantId', selectedVariantId!);
+                    formData.set('deliveryPrice', deliveryPrice.toString());
+                    const result = await addItem(null, formData as any);
+                    setMessage(result || 'Item added to cart');
+                    router.refresh();
+                  } catch (serverError) {
+                    // Server action not available (static mode) - that's OK
+                    console.log('Server action not available, using client-side cart only');
+                    setMessage('Item added to cart');
+                  }
                 } catch (error) {
                   setMessage('Error adding item to cart');
                   console.error('Error:', error);
